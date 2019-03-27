@@ -1,5 +1,6 @@
 package dhbw.db.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -7,8 +8,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class AlbumHasArtist {
+@AllArgsConstructor
+public class Album {
 
-	private int artistId;
-	private int ablumId;
+	private int id;
+	private String name;
+	private int year;
 }

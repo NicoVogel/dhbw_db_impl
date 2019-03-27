@@ -10,7 +10,6 @@ import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,6 +21,7 @@ import com.opencsv.CSVReader;
 import dhbw.db.model.AlbumTO;
 import dhbw.db.model.Artist;
 import dhbw.db.model.DBConverter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -32,6 +32,18 @@ public class DBIO {
 	public static final String ALBUM_HAS_ARTIST = "C:\\temp\\db\\albumhasartist.json";
 
 	private ObjectMapper objectMapper = new ObjectMapper();
+	@Setter
+	private int artistID = 1;
+	@Setter
+	private int albumID = 1;
+	
+	public int getNextArtistID() {
+		return artistID++;
+	}
+	
+	public int getNextAlbumID() {
+		return albumID++;
+	}
 
 	public List<Artist> loadCsvArtist(String fileName) {
 		try {
@@ -54,14 +66,6 @@ public class DBIO {
 		}
 	}
 
-	private int getIndexByName(String[] header, String name) {
-		for (int i = 0; i < header.length; i++) {
-			if(header[i].contains(name)) {
-				return i;
-			}
-		}
-		return 0;
-	}
 
 	public List<AlbumTO> loadCsvAlbum(String fileName) {
 		try {
@@ -83,16 +87,6 @@ public class DBIO {
 		}
 	}
 
-	private List<String[]> loadCsvObjectList(String fileName) throws IOException {
-		Reader reader = new FileReader(new File(fileName));
-		CSVReader csvReader = new CSVReader(reader);
-		List<String[]> list = new ArrayList<>();
-		list = csvReader.readAll();
-		reader.close();
-		csvReader.close();
-		return list.stream().map(x -> DBConverter.trimArray(x)).collect(Collectors.toList());
-	}
-	
 
 	public boolean doesFileExist(String filename) {
 		File tempFile = new File(filename);
@@ -139,12 +133,32 @@ public class DBIO {
 		writeToFile(filename, objs, true);
 	}
 
+	private List<String[]> loadCsvObjectList(String fileName) throws IOException {
+		Reader reader = new FileReader(new File(fileName));
+		CSVReader csvReader = new CSVReader(reader);
+		List<String[]> list = new ArrayList<>();
+		list = csvReader.readAll();
+		reader.close();
+		csvReader.close();
+		return list.stream().map(x -> DBConverter.trimArray(x)).collect(Collectors.toList());
+	}
+	
+
+	private int getIndexByName(String[] header, String name) {
+		for (int i = 0; i < header.length; i++) {
+			if(header[i].contains(name)) {
+				return i;
+			}
+		}
+		return 0;
+	}
+	
 	private <T> void writeToFile(String filename, List<T> objs, boolean append) {
 		try (FileWriter fw = new FileWriter(filename, append);
 				BufferedWriter bw = new BufferedWriter(fw);
 				PrintWriter out = new PrintWriter(bw)) {
 			for (T t : objs) {
-				out.write(objectMapper.writeValueAsString(t));
+				out.write(objectMapper.writeValueAsString(t) + "\n");
 			}
 		} catch (IOException e) {
 			// exception handling left as an exercise for the reader
