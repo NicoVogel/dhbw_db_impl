@@ -5,33 +5,52 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import dhbw.db.rest.AlbumTO;
+import dhbw.db.rest.ArtistTO;
+
 public class DBConverter {
 
 	private DBConverter() {
 
 	}
-	
-	public static List<AlbumHasArtist> createConnection(List<Artist> artists, List<AlbumTemp> albums){
+
+	public static ArtistTO convert(Artist a, List<AlbumTO> list) {
+		ArtistTO to = new ArtistTO();
+		to.setCountry(a.getCountry());
+		to.setName(a.getName());
+		to.setYear(a.getYear());
+		to.setAlbums(list);
+		return to;
+	}
+
+	public static AlbumTO convert(Album a) {
+		AlbumTO to = new AlbumTO();
+		to.setName(a.getName());
+		to.setYear(a.getYear());
+		return to;
+	}
+
+	public static List<AlbumHasArtist> createConnection(List<Artist> artists, List<AlbumTemp> albums) {
 		List<AlbumHasArtist> connection = new ArrayList<>();
-		
+
 		for (AlbumTemp albumTO : albums) {
 			for (String name : albumTO.getArtistNames()) {
 				Optional<Artist> optArtist = artists.stream().filter(x -> x.getName().equals(name)).findFirst();
-				if(optArtist.isPresent() == false) {
+				if (optArtist.isPresent() == false) {
 					// TODO no parent
 					continue;
 				}
 				connection.add(new AlbumHasArtist(optArtist.get().getId(), albumTO.getId()));
 			}
 		}
-		
+
 		return connection;
 	}
 
-	public static List<Album> convertToDBType(List<AlbumTemp> tos){
+	public static List<Album> convertToDBType(List<AlbumTemp> tos) {
 		return tos.stream().map(x -> new Album(x.getId(), x.getName(), x.getYear())).collect(Collectors.toList());
 	}
-	
+
 	public static Artist convertToArtist(String[] data, int nameIndex, int yearIndex, int countryIndex) {
 
 		if (data == null) {
@@ -58,6 +77,7 @@ public class DBConverter {
 		}
 		return arr;
 	}
+
 	public static AlbumTemp convertToAlbum(String[] data, int nameIndex, int artistIndex, int yearIndex) {
 
 		if (data == null) {

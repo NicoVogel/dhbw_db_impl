@@ -117,46 +117,41 @@ public class DBIO {
 		return doesFileExist(ARTIST) == false || doesFileExist(ALBUM) == false || doesFileExist(ALBUM_HAS_ARTIST);
 	}
 
-	private int mapCount = 0;
-	private int filterCount = 0;
+	public <T> T findFirst(String filename, Class<T> clazz, StreamReadCommand<T> command) {
 
-	private int getNextFilter() {
-		return filterCount++;
+		return streamReadFile(filename, clazz, command, stream -> {
+			Optional<T> val = stream.findFirst();
+			if (val.isPresent()) {
+				return val.get();
+			}
+			return null;
+		});
+
 	}
 
-	private int getNextMap() {
-		return mapCount++;
+	public <T> List<T> findAll(String filename, Class<T> clazz, StreamReadCommand<T> command) {
+		return streamReadFile(filename, clazz, command, stream -> stream.collect(Collectors.toList()));
 	}
 
-	public <T> T streamReadFile(String filename, Class<T> clazz, StreamReadCommand<T> command) {
-		mapCount = 0;
-		filterCount = 0;
-
+	private <TYP, RES> RES streamReadFile(String filename, Class<TYP> clazz, StreamReadCommand<TYP> command,
+			StreamReadFileEval<TYP, RES> eval) {
 		try (Stream<String> stream = Files.lines(Paths.get(filename))) {
-			Optional<T> val = stream.map(str -> {
-				T obj = null;
-				System.out.println(String.format("map: %d", getNextMap()));
+			Stream<TYP> filtered = stream.map(str -> {
+				TYP obj = null;
 				try {
 					obj = objectMapper.readValue(str, clazz);
 				} catch (IOException e) {
 					return null;
 				}
 				return obj;
-			}).filter(obj -> {
-				System.out.println(String.format("filter: %d", getNextFilter()));
-				if (obj == null || command.evaluate(obj) == false) {
-					return false;
-				}
-				return true;
-			}).findFirst();
-			if (val.isPresent()) {
-				return val.get();
-			}
-			return null;
-		} catch (IOException e) {
+			}).filter(obj -> obj != null && command.evaluate(obj));
 
+			return eval.eval(filtered);
+
+		} catch (IOException e) {
+			// TODO error
 		}
-		return null;
+		return eval.eval(Stream.empty());
 	}
 
 	public <T> void overrideFile(String filename, List<T> objs) {
@@ -202,6 +197,13 @@ public class DBIO {
 		} catch (IOException e) {
 			// exception handling left as an exercise for the reader
 		}
+	}
+
+	@FunctionalInterface
+	private interface StreamReadFileEval<TYP, RES> {
+
+		RES eval(Stream<TYP> stream);
+
 	}
 
 }
