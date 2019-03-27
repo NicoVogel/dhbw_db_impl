@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Bean;
 import dhbw.db.io.DBIO;
 import dhbw.db.model.Album;
 import dhbw.db.model.AlbumHasArtist;
-import dhbw.db.model.AlbumTO;
+import dhbw.db.model.AlbumTemp;
 import dhbw.db.model.Artist;
 import dhbw.db.model.DBConverter;
 
@@ -43,7 +43,7 @@ public class DBApplication {
 
 		DBIO io = getDBIO();
 
-		List<AlbumTO> albumTOs = io.loadCsvAlbum(album);
+		List<AlbumTemp> albumTOs = io.loadCsvAlbum(album);
 		List<Artist> artists = io.loadCsvArtist(artist);
 
 		albumTOs.stream().forEach(x -> x.setId(io.getNextAlbumID()));

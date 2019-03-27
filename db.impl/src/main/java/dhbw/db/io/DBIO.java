@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opencsv.CSVReader;
 
-import dhbw.db.model.AlbumTO;
+import dhbw.db.model.AlbumTemp;
 import dhbw.db.model.Artist;
 import dhbw.db.model.DBConverter;
 import lombok.Setter;
@@ -67,7 +67,7 @@ public class DBIO {
 	}
 
 
-	public List<AlbumTO> loadCsvAlbum(String fileName) {
+	public List<AlbumTemp> loadCsvAlbum(String fileName) {
 		try {
 			List<String[]> csv = loadCsvObjectList(fileName);
 			if (csv.size() == 0) {

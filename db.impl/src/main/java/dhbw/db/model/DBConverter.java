@@ -11,10 +11,10 @@ public class DBConverter {
 
 	}
 	
-	public static List<AlbumHasArtist> createConnection(List<Artist> artists, List<AlbumTO> albums){
+	public static List<AlbumHasArtist> createConnection(List<Artist> artists, List<AlbumTemp> albums){
 		List<AlbumHasArtist> connection = new ArrayList<>();
 		
-		for (AlbumTO albumTO : albums) {
+		for (AlbumTemp albumTO : albums) {
 			for (String name : albumTO.getArtistNames()) {
 				Optional<Artist> optArtist = artists.stream().filter(x -> x.getName().equals(name)).findFirst();
 				if(optArtist.isPresent() == false) {
@@ -28,7 +28,7 @@ public class DBConverter {
 		return connection;
 	}
 
-	public static List<Album> convertToDBType(List<AlbumTO> tos){
+	public static List<Album> convertToDBType(List<AlbumTemp> tos){
 		return tos.stream().map(x -> new Album(x.getId(), x.getName(), x.getYear())).collect(Collectors.toList());
 	}
 	
@@ -58,7 +58,7 @@ public class DBConverter {
 		}
 		return arr;
 	}
-	public static AlbumTO convertToAlbum(String[] data, int nameIndex, int artistIndex, int yearIndex) {
+	public static AlbumTemp convertToAlbum(String[] data, int nameIndex, int artistIndex, int yearIndex) {
 
 		if (data == null) {
 			// TODO error
@@ -75,7 +75,7 @@ public class DBConverter {
 			// TODO error
 		}
 
-		return new AlbumTO(0, name, artistNames, year);
+		return new AlbumTemp(0, name, artistNames, year);
 	}
 
 }
