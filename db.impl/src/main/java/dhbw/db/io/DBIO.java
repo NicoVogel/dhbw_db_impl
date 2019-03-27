@@ -15,6 +15,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opencsv.CSVReader;
 
@@ -25,22 +28,38 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Component
 public class DBIO {
 
-	public static final String ARTIST = "C:\\temp\\db\\artist.json";
-	public static final String ALBUM = "C:\\temp\\db\\album.json";
-	public static final String ALBUM_HAS_ARTIST = "C:\\temp\\db\\albumhasartist.json";
+	private static final String ARTIST = "artist.json";
+	private static final String ALBUM = "album.json";
+	private static final String ALBUM_HAS_ARTIST = "albumhasartist.json";
+
+	@Value("${dhbw.db.data}")
+	private String dataFolder;
 
 	private ObjectMapper objectMapper = new ObjectMapper();
 	@Setter
 	private int artistID = 1;
 	@Setter
 	private int albumID = 1;
-	
+
+	public String getArtistFilePath() {
+		return this.dataFolder + DBIO.ARTIST;
+	}
+
+	public String getAlbumFilePath() {
+		return this.dataFolder + DBIO.ALBUM;
+	}
+
+	public String getAlbumHasArtistFilePath() {
+		return this.dataFolder + DBIO.ALBUM_HAS_ARTIST;
+	}
+
 	public int getNextArtistID() {
 		return artistID++;
 	}
-	
+
 	public int getNextAlbumID() {
 		return albumID++;
 	}
@@ -49,7 +68,7 @@ public class DBIO {
 		try {
 			List<String[]> csv = loadCsvObjectList(fileName);
 			if (csv.size() == 0) {
-				//TODO info
+				// TODO info
 				return new ArrayList<>();
 			}
 			String[] first = csv.get(0);
@@ -59,19 +78,19 @@ public class DBIO {
 			int yearIndex = getIndexByName(first, "year");
 			int countryIndex = getIndexByName(first, "country");
 
-			return csv.stream().map(x -> DBConverter.convertToArtist(x, nameIndex, yearIndex, countryIndex)).collect(Collectors.toList());
+			return csv.stream().map(x -> DBConverter.convertToArtist(x, nameIndex, yearIndex, countryIndex))
+					.collect(Collectors.toList());
 		} catch (IOException e) {
 			// TODO error
 			return new ArrayList<>();
 		}
 	}
 
-
 	public List<AlbumTemp> loadCsvAlbum(String fileName) {
 		try {
 			List<String[]> csv = loadCsvObjectList(fileName);
 			if (csv.size() == 0) {
-				//TODO info
+				// TODO info
 				return new ArrayList<>();
 			}
 			String[] first = csv.get(0);
@@ -80,13 +99,13 @@ public class DBIO {
 			int nameIndex = getIndexByName(first, "name");
 			int yearIndex = getIndexByName(first, "year");
 			int artistIndex = getIndexByName(first, "artist");
-			return csv.stream().map(x -> DBConverter.convertToAlbum(x, nameIndex, artistIndex, yearIndex)).collect(Collectors.toList());
+			return csv.stream().map(x -> DBConverter.convertToAlbum(x, nameIndex, artistIndex, yearIndex))
+					.collect(Collectors.toList());
 		} catch (IOException e) {
 			// TODO log
 			return new ArrayList<>();
 		}
 	}
-
 
 	public boolean doesFileExist(String filename) {
 		File tempFile = new File(filename);
@@ -142,17 +161,16 @@ public class DBIO {
 		csvReader.close();
 		return list.stream().map(x -> DBConverter.trimArray(x)).collect(Collectors.toList());
 	}
-	
 
 	private int getIndexByName(String[] header, String name) {
 		for (int i = 0; i < header.length; i++) {
-			if(header[i].contains(name)) {
+			if (header[i].contains(name)) {
 				return i;
 			}
 		}
 		return 0;
 	}
-	
+
 	private <T> void writeToFile(String filename, List<T> objs, boolean append) {
 		try (FileWriter fw = new FileWriter(filename, append);
 				BufferedWriter bw = new BufferedWriter(fw);

@@ -1,6 +1,5 @@
 package dhbw.db;
 
-import java.net.URL;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -52,23 +51,15 @@ public class DBApplication {
 
 		List<Album> albums = DBConverter.convertToDBType(albumTOs);
 
-		io.overrideFile(DBIO.ALBUM, albums);
-		io.overrideFile(DBIO.ARTIST, artists);
-		io.overrideFile(DBIO.ALBUM_HAS_ARTIST, connectoin);
+		io.overrideFile(io.getAlbumFilePath(), albums);
+		io.overrideFile(io.getArtistFilePath(), artists);
+		io.overrideFile(io.getAlbumHasArtistFilePath(), connectoin);
 
 	}
 
 	@Bean
 	public DBIO getDBIO() {
 		return new DBIO();
-	}
-
-	private String getPathOrEmpty(String filename) {
-		URL u = getClass().getResource(filename);
-		if (u == null) {
-			return "";
-		}
-		return u.getFile();
 	}
 
 }
