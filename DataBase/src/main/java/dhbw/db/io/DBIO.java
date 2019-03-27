@@ -15,6 +15,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DBIO {
 
+	public static final String ARTIST = "artist.csv";
+	public static final String ALBUM = "album.csv";
+	public static final String ALBUM_HAS_ARTIST = "albumhasartist.csv";
+	
 	public <T> List<T> loadObjectList(Class<T> type, String fileName) {
 	    try {
 	        CsvSchema bootstrapSchema = CsvSchema.emptySchema().withHeader();
