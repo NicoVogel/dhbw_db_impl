@@ -42,6 +42,15 @@ public class DBIO {
 			return Collections.emptyList();
 		}
 	}
+	
+	public boolean doesFileExist(String filename) {
+		File tempFile = new File(filename);
+		return tempFile.exists();
+	}
+	
+	public boolean needsInizialisation() {
+		return doesFileExist(ARTIST) == false || doesFileExist(ALBUM) == false || doesFileExist(ALBUM_HAS_ARTIST);
+	}
 
 	public <T> T streamReadFile(String filename, Class<T> clazz, StreamReadCommand<T> command) {
 		try (Stream<String> stream = Files.lines(Paths.get(filename))) {
