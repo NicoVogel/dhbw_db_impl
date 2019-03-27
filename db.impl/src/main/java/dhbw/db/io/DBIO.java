@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -116,10 +117,25 @@ public class DBIO {
 		return doesFileExist(ARTIST) == false || doesFileExist(ALBUM) == false || doesFileExist(ALBUM_HAS_ARTIST);
 	}
 
+	private int mapCount = 0;
+	private int filterCount = 0;
+
+	private int getNextFilter() {
+		return filterCount++;
+	}
+
+	private int getNextMap() {
+		return mapCount++;
+	}
+
 	public <T> T streamReadFile(String filename, Class<T> clazz, StreamReadCommand<T> command) {
+		mapCount = 0;
+		filterCount = 0;
+
 		try (Stream<String> stream = Files.lines(Paths.get(filename))) {
-			return stream.map(str -> {
+			Optional<T> val = stream.map(str -> {
 				T obj = null;
+				System.out.println(String.format("map: %d", getNextMap()));
 				try {
 					obj = objectMapper.readValue(str, clazz);
 				} catch (IOException e) {
@@ -127,11 +143,16 @@ public class DBIO {
 				}
 				return obj;
 			}).filter(obj -> {
+				System.out.println(String.format("filter: %d", getNextFilter()));
 				if (obj == null || command.evaluate(obj) == false) {
 					return false;
 				}
 				return true;
-			}).findFirst().get();
+			}).findFirst();
+			if (val.isPresent()) {
+				return val.get();
+			}
+			return null;
 		} catch (IOException e) {
 
 		}

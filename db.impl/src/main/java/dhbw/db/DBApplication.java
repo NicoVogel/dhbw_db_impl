@@ -4,10 +4,10 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 
 import dhbw.db.io.DBIO;
 import dhbw.db.model.Album;
@@ -27,6 +27,8 @@ public class DBApplication {
 	private String album;
 	@Value("${dhbw.db.artist}")
 	private String artist;
+	@Autowired
+	private DBIO io;
 
 	@PostConstruct
 	public void setup() {
@@ -39,8 +41,6 @@ public class DBApplication {
 			// TODO album is missing
 			return;
 		}
-
-		DBIO io = getDBIO();
 
 		List<AlbumTemp> albumTOs = io.loadCsvAlbum(album);
 		List<Artist> artists = io.loadCsvArtist(artist);
@@ -55,11 +55,6 @@ public class DBApplication {
 		io.overrideFile(io.getArtistFilePath(), artists);
 		io.overrideFile(io.getAlbumHasArtistFilePath(), connectoin);
 
-	}
-
-	@Bean
-	public DBIO getDBIO() {
-		return new DBIO();
 	}
 
 }

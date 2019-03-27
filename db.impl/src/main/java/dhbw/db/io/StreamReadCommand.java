@@ -1,7 +1,7 @@
 package dhbw.db.io;
 
 @FunctionalInterface
- interface StreamReadCommand<T> {
+public interface StreamReadCommand<T> {
 
 	/**
 	 * 

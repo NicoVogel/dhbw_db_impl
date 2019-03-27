@@ -1,16 +1,21 @@
 package dhbw.db.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
 public class AlbumHasArtist {
 
 	private int artistId;
 	private int albumId;
+
+	@JsonCreator
+	public AlbumHasArtist() {
+
+	}
 }
