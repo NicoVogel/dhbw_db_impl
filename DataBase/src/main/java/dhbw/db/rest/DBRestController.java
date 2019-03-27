@@ -14,10 +14,16 @@ public class DBRestController {
 
 	@Autowired
 	private DBIO io;
+
+	@GetMapping("/")
+	public String reload() {
+		return "";
+	}
 	
 	@GetMapping("/")
 	public Album getAll() {
 		return null;
 	}
+	
 	
 }
