@@ -2,52 +2,103 @@ package dhbw.db.io;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.springframework.core.io.ClassPathResource;
-
-import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.csv.CsvMapper;
-import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import com.opencsv.CSVReader;
 
+import dhbw.db.model.AlbumTO;
+import dhbw.db.model.Artist;
+import dhbw.db.model.DBConverter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class DBIO {
 
-	public static final String ARTIST = "artist.csv";
-	public static final String ALBUM = "album.csv";
-	public static final String ALBUM_HAS_ARTIST = "albumhasartist.csv";
+	public static final String ARTIST = "C:\\temp\\db\\artist.json";
+	public static final String ALBUM = "C:\\temp\\db\\album.json";
+	public static final String ALBUM_HAS_ARTIST = "C:\\temp\\db\\albumhasartist.json";
 
 	private ObjectMapper objectMapper = new ObjectMapper();
 
-	public <T> List<T> loadCsvObjectList(Class<T> type, String fileName) {
+	public List<Artist> loadCsvArtist(String fileName) {
 		try {
-			CsvSchema bootstrapSchema = CsvSchema.emptySchema().withHeader();
-			CsvMapper mapper = new CsvMapper();
-			File file = new ClassPathResource(fileName).getFile();
-			MappingIterator<T> readValues = mapper.reader(type).with(bootstrapSchema).readValues(file);
-			return readValues.readAll();
-		} catch (Exception e) {
-			log.error("Error occurred while loading object list from file " + fileName, e);
-			return Collections.emptyList();
+			List<String[]> csv = loadCsvObjectList(fileName);
+			if (csv.size() == 0) {
+				//TODO info
+				return new ArrayList<>();
+			}
+			String[] first = csv.get(0);
+			csv.remove(0);
+
+			int nameIndex = getIndexByName(first, "name");
+			int yearIndex = getIndexByName(first, "year");
+			int countryIndex = getIndexByName(first, "country");
+
+			return csv.stream().map(x -> DBConverter.convertToArtist(x, nameIndex, yearIndex, countryIndex)).collect(Collectors.toList());
+		} catch (IOException e) {
+			// TODO error
+			return new ArrayList<>();
 		}
 	}
+
+	private int getIndexByName(String[] header, String name) {
+		for (int i = 0; i < header.length; i++) {
+			if(header[i].contains(name)) {
+				return i;
+			}
+		}
+		return 0;
+	}
+
+	public List<AlbumTO> loadCsvAlbum(String fileName) {
+		try {
+			List<String[]> csv = loadCsvObjectList(fileName);
+			if (csv.size() == 0) {
+				//TODO info
+				return new ArrayList<>();
+			}
+			String[] first = csv.get(0);
+			csv.remove(0);
+
+			int nameIndex = getIndexByName(first, "name");
+			int yearIndex = getIndexByName(first, "year");
+			int artistIndex = getIndexByName(first, "artist");
+			return csv.stream().map(x -> DBConverter.convertToAlbum(x, nameIndex, artistIndex, yearIndex)).collect(Collectors.toList());
+		} catch (IOException e) {
+			// TODO log
+			return new ArrayList<>();
+		}
+	}
+
+	private List<String[]> loadCsvObjectList(String fileName) throws IOException {
+		Reader reader = new FileReader(new File(fileName));
+		CSVReader csvReader = new CSVReader(reader);
+		List<String[]> list = new ArrayList<>();
+		list = csvReader.readAll();
+		reader.close();
+		csvReader.close();
+		return list.stream().map(x -> DBConverter.trimArray(x)).collect(Collectors.toList());
+	}
 	
+
 	public boolean doesFileExist(String filename) {
 		File tempFile = new File(filename);
 		return tempFile.exists();
 	}
-	
+
 	public boolean needsInizialisation() {
 		return doesFileExist(ARTIST) == false || doesFileExist(ALBUM) == false || doesFileExist(ALBUM_HAS_ARTIST);
 	}
