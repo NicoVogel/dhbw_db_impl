@@ -1,13 +1,18 @@
 package dhbw.db.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import dhbw.db.rest.AlbumTO;
 import dhbw.db.rest.ArtistTO;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class DBConverter {
 
 	private DBConverter() {
@@ -31,20 +36,47 @@ public class DBConverter {
 	}
 
 	public static List<AlbumHasArtist> createConnection(List<Artist> artists, List<AlbumTemp> albums) {
-		List<AlbumHasArtist> connection = new ArrayList<>();
+		Map<Integer, AlbumHasArtist> connection = new HashMap<>();
+
+		Map<Integer, List<Artist>> nameHashMap = artists.stream()
+				.collect(Collectors.groupingBy(x -> x.getName().hashCode()));
+
+		Set<AlbumTemp> invalidInput = new HashSet<>();
 
 		for (AlbumTemp albumTO : albums) {
 			for (String name : albumTO.getArtistNames()) {
-				Optional<Artist> optArtist = artists.stream().filter(x -> x.getName().equals(name)).findFirst();
-				if (optArtist.isPresent() == false) {
-					// TODO no parent
-					continue;
+				int hash = name.trim().hashCode();
+				List<Artist> matches = nameHashMap.get(hash);
+				if (matches == null) {
+					/*
+					 * log.debug(String.format("Album cannot be added (%d): no artist found",
+					 * albumTO.getId()));
+					 */
+					log.debug(String.format("NOT FOUND: albumId: %d, artistNameHash: %d\t\t,artistName: '%s'",
+							albumTO.getId(), hash, name));
+					invalidInput.add(albumTO);
+					break;
+				} else if (matches.size() > 1) {
+					/*
+					 * log.debug(String.format(
+					 * "Album cannot be added (%d): multiple artists have the same name, cannnot asigned to a specific artist"
+					 * , albumTO.getId()));
+					 */
+					log.debug(String.format("AMBIGUOUS: albumId: %d, artistNameHash: %d\t\t,artistName: '%s'",
+							albumTO.getId(), hash, name));
+					invalidInput.add(albumTO);
+					break;
 				}
-				connection.add(new AlbumHasArtist(optArtist.get().getId(), albumTO.getId()));
+				AlbumHasArtist con = new AlbumHasArtist(matches.get(0).getId(), albumTO.getId());
+				int conHash = String.format("%d-%d", con.getAlbumId(), con.getArtistId()).hashCode();
+				connection.computeIfAbsent(conHash, k -> con);
 			}
 		}
 
-		return connection;
+		log.info(String.format("%d albums where not added", invalidInput.size()));
+		invalidInput.stream().forEach(x -> albums.remove(x));
+
+		return new ArrayList<>(connection.values());
 	}
 
 	public static List<Album> convertToDBType(List<AlbumTemp> tos) {
@@ -96,6 +128,16 @@ public class DBConverter {
 		}
 
 		return new AlbumTemp(0, name, artistNames, year);
+	}
+
+	public static long hash(String string) {
+		long h = 1125899906842597L; // prime
+		int len = string.length();
+
+		for (int i = 0; i < len; i++) {
+			h = 31 * h + string.charAt(i);
+		}
+		return h;
 	}
 
 }

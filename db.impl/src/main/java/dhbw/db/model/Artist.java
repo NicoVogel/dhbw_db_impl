@@ -1,5 +1,7 @@
 package dhbw.db.model;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 import lombok.AllArgsConstructor;
@@ -11,8 +13,12 @@ import lombok.ToString;
 @Setter
 @AllArgsConstructor
 @ToString
-public class Artist {
+public class Artist implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2328239849815641297L;
 	int id;
 	private String name;
 	private int year;
