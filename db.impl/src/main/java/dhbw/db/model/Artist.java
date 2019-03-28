@@ -3,7 +3,6 @@ package dhbw.db.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -12,7 +11,6 @@ import lombok.ToString;
 @Setter
 @AllArgsConstructor
 @ToString
-@EqualsAndHashCode
 public class Artist {
 
 	int id;
@@ -24,4 +22,14 @@ public class Artist {
 	public Artist() {
 
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null || obj instanceof Artist == false) {
+			return false;
+		}
+		Artist a = (Artist) obj;
+		return this.id == a.id;
+	}
+
 }

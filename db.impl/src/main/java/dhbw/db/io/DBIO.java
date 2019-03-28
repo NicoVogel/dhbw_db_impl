@@ -119,7 +119,7 @@ public class DBIO {
 
 	public <T> T findFirst(String filename, Class<T> clazz, StreamReadCommand<T> command) {
 
-		return streamReadFile(filename, clazz, command, stream -> {
+		return findCustom(filename, clazz, command, stream -> {
 			Optional<T> val = stream.findFirst();
 			if (val.isPresent()) {
 				return val.get();
@@ -130,10 +130,10 @@ public class DBIO {
 	}
 
 	public <T> List<T> findAll(String filename, Class<T> clazz, StreamReadCommand<T> command) {
-		return streamReadFile(filename, clazz, command, stream -> stream.collect(Collectors.toList()));
+		return findCustom(filename, clazz, command, stream -> stream.collect(Collectors.toList()));
 	}
 
-	private <TYP, RES> RES streamReadFile(String filename, Class<TYP> clazz, StreamReadCommand<TYP> command,
+	public <TYP, RES> RES findCustom(String filename, Class<TYP> clazz, StreamReadCommand<TYP> command,
 			StreamReadFileEval<TYP, RES> eval) {
 		try (Stream<String> stream = Files.lines(Paths.get(filename))) {
 			Stream<TYP> filtered = stream.map(str -> {
@@ -197,13 +197,6 @@ public class DBIO {
 		} catch (IOException e) {
 			// exception handling left as an exercise for the reader
 		}
-	}
-
-	@FunctionalInterface
-	private interface StreamReadFileEval<TYP, RES> {
-
-		RES eval(Stream<TYP> stream);
-
 	}
 
 }
