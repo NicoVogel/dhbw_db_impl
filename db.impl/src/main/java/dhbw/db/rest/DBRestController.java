@@ -1,10 +1,8 @@
 package dhbw.db.rest;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -19,7 +17,9 @@ import dhbw.db.model.Album;
 import dhbw.db.model.AlbumHasArtist;
 import dhbw.db.model.Artist;
 import dhbw.db.model.DBConverter;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequestMapping("/")
 public class DBRestController {
@@ -30,8 +30,10 @@ public class DBRestController {
 	@GetMapping("/q1")
 	public ArtistTO getAllAlbumOfArtist(@RequestParam String name) {
 
+		long start = System.currentTimeMillis();
 		// find and artist with the given name
-		Artist match = io.findFirst(io.getArtistFilePath(), Artist.class, artist -> artist.getName().equals(name));
+		int nameHash = name.hashCode();
+		Artist match = io.findFirst(io.getArtistFilePath(), Artist.class, artist -> artist.getNameHash() == nameHash);
 
 		if (match == null) {
 			return new ArtistTO();
@@ -49,12 +51,15 @@ public class DBRestController {
 
 		// convert the album into the returned datatype
 		List<AlbumTO> albumsto = album.stream().map(DBConverter::convert).collect(Collectors.toList());
-		return DBConverter.convert(match, albumsto);
+		ArtistTO result = DBConverter.convert(match, albumsto);
+		log.debug(String.format("q1 time: %d", System.currentTimeMillis() - start));
+		return result;
 	}
 
 	@GetMapping("/q2")
 	public List<ArtistTO> getNewestAlbumOfEachArtist() {
 
+		long start = System.currentTimeMillis();
 		List<ArtistTO> result = new ArrayList<>();
 
 		// get all artists
@@ -62,52 +67,28 @@ public class DBRestController {
 		if (artists.isEmpty()) {
 			return result;
 		}
+		Map<Integer, List<AlbumHasArtist>> connectionMatch = io.findCustom(io.getAlbumHasArtistFilePath(),
+				AlbumHasArtist.class, x -> true, x -> x.collect(Collectors.groupingBy(y -> y.getArtistId())));
 
-		// separate the artist ids to use the contains method with speed of 1,
-		// because the set is a hashset
-		Set<Integer> artistIds = artists.stream().map(x -> x.getId()).collect(Collectors.toSet());
+		Map<Integer, Album> albums = io.findCustom(io.getAlbumFilePath(), Album.class, x -> true,
+				x -> x.collect(Collectors.toMap(y -> y.getId(), y -> y)));
 
-		// read only AlbumHasArtist which where the artist is in the artistIds set
-		// (should be all)
-		List<AlbumHasArtist> connectionMatch = io.findAll(io.getAlbumHasArtistFilePath(), AlbumHasArtist.class,
-				x -> artistIds.contains(x.getArtistId()));
-		if (connectionMatch.isEmpty()) {
-			return result;
-		}
-
-		// albumId, list<artistID>
-		Map<Integer, List<Integer>> albumToArtistMap = new HashMap<>();
-		connectionMatch.stream().forEach(
-				x -> albumToArtistMap.computeIfAbsent(x.getAlbumId(), v -> new ArrayList<>()).add(x.getArtistId()));
-
-		// will contain the albums for each artistid
-		Map<Integer, List<Album>> mapAlbum = new HashMap<>();
-
-		// read all albums from file and save them in the mapAlbum if they currently
-		// read album has a value in the albumToArtistMap (adds it to each value of the
-		// albumToArtistMap).
-		io.findAll(io.getAlbumFilePath(), Album.class, x -> {
-			List<Integer> artistIdOfAlbum = albumToArtistMap.get(x.getId());
-			if (artistIdOfAlbum != null) {
-				artistIdOfAlbum.stream()
-						.forEach(artistId -> mapAlbum.computeIfAbsent(artistId, k -> new ArrayList<>()).add(x));
+		for (Artist artist : artists) {
+			List<AlbumHasArtist> connections = connectionMatch.get(artist.getId());
+			if (connections == null) {
+				continue;
 			}
-			// because the output is not used, no value should be returned
-			return false;
-		});
-
-		for (Entry<Integer, List<Album>> entity : mapAlbum.entrySet()) {
-
-			Artist match = artists.stream().filter(x -> x.getId() == entity.getKey()).findFirst().get();
-
-			// sort the values and get the biggest
-			Album album = entity.getValue().stream().sorted((x, y) -> y.getYear() - x.getYear()).findFirst().get();
-			List<AlbumTO> albumsto = new ArrayList<>();
-			albumsto.add(DBConverter.convert(album));
-			// convert to end type and add
-			result.add(DBConverter.convert(match, albumsto));
+			List<AlbumTO> artistAlbum = new ArrayList<>();
+			for (AlbumHasArtist albumHasArtist : connections) {
+				Album album = albums.get(albumHasArtist.getAlbumId());
+				if (album != null) {
+					artistAlbum.add(DBConverter.convert(album));
+				}
+			}
+			result.add(DBConverter.convert(artist, artistAlbum));
 		}
 
+		log.debug(String.format("q2 time: %d", System.currentTimeMillis() - start));
 		return result;
 	}
 

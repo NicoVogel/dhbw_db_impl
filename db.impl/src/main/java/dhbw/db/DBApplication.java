@@ -43,7 +43,8 @@ public class DBApplication {
 			// TODO album is missing
 			return;
 		}
-
+		log.info(this.album);
+		log.info(this.artist);
 		log.info("start loadfing data files, which will override the current database content");
 
 		List<AlbumTemp> albumTOs = io.loadCsvAlbum(album);
