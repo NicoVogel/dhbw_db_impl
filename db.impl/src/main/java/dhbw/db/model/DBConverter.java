@@ -38,14 +38,13 @@ public class DBConverter {
 	public static List<AlbumHasArtist> createConnection(List<Artist> artists, List<AlbumTemp> albums) {
 		Map<Integer, AlbumHasArtist> connection = new HashMap<>();
 
-		Map<Integer, List<Artist>> nameHashMap = artists.stream()
-				.collect(Collectors.groupingBy(x -> x.getName().hashCode()));
+		Map<Integer, List<Artist>> nameHashMap = artists.stream().collect(Collectors.groupingBy(x -> x.getNameHash()));
 
 		Set<AlbumTemp> invalidInput = new HashSet<>();
 
-		for (AlbumTemp albumTO : albums) {
-			for (String name : albumTO.getArtistNames()) {
-				int hash = name.trim().hashCode();
+		for (AlbumTemp albumTemp : albums) {
+			for (String name : albumTemp.getArtistNames()) {
+				int hash = name.hashCode();
 				List<Artist> matches = nameHashMap.get(hash);
 				if (matches == null) {
 					/*
@@ -53,8 +52,8 @@ public class DBConverter {
 					 * albumTO.getId()));
 					 */
 					log.debug(String.format("NOT FOUND: albumId: %d, artistNameHash: %d\t\t,artistName: '%s'",
-							albumTO.getId(), hash, name));
-					invalidInput.add(albumTO);
+							albumTemp.getId(), hash, name));
+					invalidInput.add(albumTemp);
 					break;
 				} else if (matches.size() > 1) {
 					/*
@@ -63,11 +62,11 @@ public class DBConverter {
 					 * , albumTO.getId()));
 					 */
 					log.debug(String.format("AMBIGUOUS: albumId: %d, artistNameHash: %d\t\t,artistName: '%s'",
-							albumTO.getId(), hash, name));
-					invalidInput.add(albumTO);
+							albumTemp.getId(), hash, name));
+					invalidInput.add(albumTemp);
 					break;
 				}
-				AlbumHasArtist con = new AlbumHasArtist(matches.get(0).getId(), albumTO.getId());
+				AlbumHasArtist con = new AlbumHasArtist(matches.get(0).getId(), albumTemp.getId());
 				int conHash = String.format("%d-%d", con.getAlbumId(), con.getArtistId()).hashCode();
 				connection.computeIfAbsent(conHash, k -> con);
 			}
@@ -80,7 +79,8 @@ public class DBConverter {
 	}
 
 	public static List<Album> convertToDBType(List<AlbumTemp> tos) {
-		return tos.stream().map(x -> new Album(x.getId(), x.getName(), x.getYear())).collect(Collectors.toList());
+		return tos.stream().map(x -> new Album(x.getId(), x.getName().hashCode(), x.getName(), x.getYear()))
+				.collect(Collectors.toList());
 	}
 
 	public static Artist convertToArtist(String[] data, int nameIndex, int yearIndex, int countryIndex) {
@@ -91,16 +91,16 @@ public class DBConverter {
 			// TODO error
 		}
 
-		String name = data[nameIndex];
+		String name = data[nameIndex].trim();
 		int year = 0;
-		String country = data[countryIndex];
+		String country = data[countryIndex].trim();
 		try {
 			year = Integer.parseInt(data[yearIndex]);
 		} catch (NumberFormatException e) {
 			// TODO error
 		}
 
-		return new Artist(0, name, year, country);
+		return new Artist(0, name.hashCode(), country.hashCode(), name, year, country);
 	}
 
 	public static String[] trimArray(String[] arr) {
@@ -118,7 +118,7 @@ public class DBConverter {
 			// TODO error
 		}
 
-		String name = data[nameIndex];
+		String name = data[nameIndex].trim();
 		int year = 0;
 		String[] artistNames = trimArray(data[artistIndex].split(","));
 		try {

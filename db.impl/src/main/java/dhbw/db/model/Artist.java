@@ -19,7 +19,9 @@ public class Artist implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 2328239849815641297L;
-	int id;
+	private int id;
+	private int nameHash;
+	private int countryHash;
 	private String name;
 	private int year;
 	private String country;

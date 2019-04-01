@@ -20,6 +20,7 @@ public class Album implements Serializable {
 	 */
 	private static final long serialVersionUID = 8887889012255995457L;
 	private int id;
+	private int nameHash;
 	private String name;
 	private int year;
 
