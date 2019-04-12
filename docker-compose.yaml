@@ -9,6 +9,8 @@ services:
     - frontend
   eureka:
     image: dhbw-db-eureka
+    ports:
+    - "8761:8761"
     networks:
     - backend
   instance:
@@ -23,4 +25,4 @@ networks:
   frontend:
     internal: false 
   backend:
-    internal: true
+    internal: false

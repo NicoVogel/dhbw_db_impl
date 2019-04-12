@@ -42,6 +42,7 @@ removeIfRunning instance
 removeIfRunning eureka
 
 docker image prune -f
+docker network prune -f
 
 echo "------------------------------------------------------------------------"
 echo "START MS DB"
