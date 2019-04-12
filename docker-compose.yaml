@@ -1,0 +1,26 @@
+version: '3'
+services:
+  zuul:
+    image: dhbw-db-zuul
+    ports:
+    - "8080:8080"
+    networks:
+    - backend
+    - frontend
+  eureka:
+    image: dhbw-db-eureka
+    networks:
+    - backend
+  instance:
+    image: dhbw-db-instance
+    networks:
+    - backend
+  manager:
+    image: dhbw-db-manager
+    networks:
+    - backend
+networks: 
+  frontend:
+    internal: false 
+  backend:
+    internal: true

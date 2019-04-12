@@ -18,7 +18,7 @@
 	<properties>
 		<java.version>1.8</java.version>
 		<spring-cloud.version>Greenwich.SR1</spring-cloud.version>
-		<docker.image.prefix>dhbw_db</docker.image.prefix>
+		<docker.image.prefix>dhbw-db</docker.image.prefix>
 	</properties>
 
 	<dependencies>
@@ -49,9 +49,33 @@
 				<groupId>com.spotify</groupId>
 				<artifactId>dockerfile-maven-plugin</artifactId>
 				<version>1.4.9</version>
+				<executions>
+					<execution>
+						<id>default</id>
+						<goals>
+							<goal>build</goal>
+							<goal>tag</goal>
+						</goals>
+						<configuration>
+							<tag>${project.version}</tag>
+						</configuration>
+					</execution>
+					<execution>
+						<id>default-2</id>
+						<goals>
+							<goal>tag</goal>
+						</goals>
+						<configuration>
+							<tag>latest</tag>
+						</configuration>
+					</execution>
+				</executions>
 				<configuration>
 					<repository>
 						${docker.image.prefix}-eureka</repository>
+					<buildArgs>
+						<JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
+					</buildArgs>
 				</configuration>
 			</plugin>
 			<plugin>
