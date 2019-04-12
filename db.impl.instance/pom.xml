@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>dhbw.db</groupId>
 	<artifactId>impl.instance</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.1</version>
 	<name>DB Instance</name>
 	<description>One instance which edits data</description>
 

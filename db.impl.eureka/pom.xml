@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>dhbw.db</groupId>
 	<artifactId>impl.eureka</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1</version>
 	<name>db.impl.eureka</name>
 	<description>One instance which edits data</description>
 
