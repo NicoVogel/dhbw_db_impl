@@ -62,8 +62,9 @@ build -ARG $args[0] -CHAR e -NAME eureka
 build -ARG $args[0] -CHAR m -NAME manager
 build -ARG $args[0] -CHAR i -NAME instance
 
+docker-compose stop
+
 docker image prune -f
-docker network prune -f
 
 echo "------------------------------------------------------------------------"
 echo "START MS DB"
