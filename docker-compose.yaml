@@ -25,4 +25,4 @@ networks:
   frontend:
     internal: false 
   backend:
-    internal: false
+    internal: true
