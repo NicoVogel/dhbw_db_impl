@@ -17,12 +17,8 @@ services:
     image: dhbw-db-instance
     networks:
     - backend
-  manager:
-    image: dhbw-db-manager
-    networks:
-    - backend
 networks: 
   frontend:
     internal: false 
   backend:
-    internal: true
+    internal: false
