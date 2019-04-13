@@ -24,11 +24,11 @@ function build {
       -w /usr/src/mymaven \
       maven:alpine \
       mvn install dockerfile:build
-  fi
-}
 
-function removeIfRunning {
-  docker rm -vf $(docker ps -aq --filter ancestor=dhbw-db-$1)
+    if [[ -z $(docker ps -aq --filter ancestor=dhbw-db-$3) ]]; then
+      docker rm -vf $(docker ps -aq --filter ancestor=dhbw-db-$3)
+    fi
+  fi
 }
 
 build $1 z zuul

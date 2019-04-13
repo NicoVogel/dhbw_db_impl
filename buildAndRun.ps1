@@ -50,22 +50,17 @@ function build($ARG, $CHAR, $NAME) {
             -w /usr/src/mymaven `
             maven:alpine `
             mvn install dockerfile:build
+        
+        if( $(docker ps -aq --filter ancestor=dhbw-db-$NAME) ){
+            docker rm -vf $(docker ps -aq --filter ancestor=dhbw-db-${NAME})
+        }
     }
-}
-
-function removeIfRunning ($NAME) {
-  docker rm -vf $(docker ps -aq --filter ancestor=dhbw-db-${NAME})
 }
 
 build -ARG $args[0] -CHAR z -NAME zuul
 build -ARG $args[0] -CHAR e -NAME eureka
 build -ARG $args[0] -CHAR m -NAME manager
 build -ARG $args[0] -CHAR i -NAME instance
-
-removeIfRunning -NAME zuul
-removeIfRunning -NAME eureka
-removeIfRunning -NAME manager
-removeIfRunning -NAME instance
 
 docker image prune -f
 docker network prune -f
