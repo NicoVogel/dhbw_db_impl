@@ -36,11 +36,6 @@ build $1 m manager
 build $1 i instance
 build $1 e eureka
 
-removeIfRunning zuul
-removeIfRunning manager
-removeIfRunning instance
-removeIfRunning eureka
-
 docker image prune -f
 docker network prune -f
 
