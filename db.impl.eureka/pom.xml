@@ -50,6 +50,7 @@
 				<artifactId>dockerfile-maven-plugin</artifactId>
 				<version>1.4.9</version>
 				<executions>
+					<!-- 
 					<execution>
 						<id>default</id>
 						<goals>
@@ -60,6 +61,7 @@
 							<tag>${project.version}</tag>
 						</configuration>
 					</execution>
+					 -->
 					<execution>
 						<id>default-2</id>
 						<goals>

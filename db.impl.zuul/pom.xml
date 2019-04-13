@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>dhbw.db</groupId>
 	<artifactId>impl.zuul</artifactId>
-	<version>0.1</version>
+	<version>1</version>
 	<name>db.impl.zuul</name>
 	<description>Demo project for Spring Boot</description>
 
@@ -22,10 +22,6 @@
 	</properties>
 
 	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-zuul</artifactId>
@@ -64,6 +60,7 @@
 				<artifactId>dockerfile-maven-plugin</artifactId>
 				<version>1.4.9</version>
 				<executions>
+					<!-- 
 					<execution>
 						<id>default</id>
 						<goals>
@@ -74,6 +71,7 @@
 							<tag>${project.version}</tag>
 						</configuration>
 					</execution>
+					 -->
 					<execution>
 						<id>default-2</id>
 						<goals>
