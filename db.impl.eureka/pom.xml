@@ -63,8 +63,9 @@
 					</execution>
 					 -->
 					<execution>
-						<id>default-2</id>
+						<id>default</id>
 						<goals>
+							<goal>build</goal>
 							<goal>tag</goal>
 						</goals>
 						<configuration>
