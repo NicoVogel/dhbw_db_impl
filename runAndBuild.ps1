@@ -41,6 +41,7 @@ function build($ARG, $CHAR, $NAME) {
     if((${ARG} -Match "b") -Or (${ARG} -Match "${CHAR}") -Or ( -Not $(docker images -q dhbw-db-$NAME))){
         echo "------------------------------------------------------------------------"
         echo "BUILD ${NAME}"
+        echo $MOUNT_PATH/db.impl.${NAME}
         echo "------------------------------------------------------------------------"
         docker run --rm -it `
             -v /var/run/docker.sock:/var/run/docker.sock `
@@ -59,7 +60,6 @@ function build($ARG, $CHAR, $NAME) {
 
 build -ARG $args[0] -CHAR z -NAME zuul
 build -ARG $args[0] -CHAR e -NAME eureka
-build -ARG $args[0] -CHAR m -NAME manager
 build -ARG $args[0] -CHAR i -NAME instance
 
 docker-compose stop
