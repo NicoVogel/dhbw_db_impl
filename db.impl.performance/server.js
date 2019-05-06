@@ -31,7 +31,7 @@ const client = new Eureka({
         fetchRegistry: true
     },
     eureka: {
-        host: 'http://eureka',
+        host: 'eureka',
         port: 8761,
         servicePath: '/eureka'
     }
