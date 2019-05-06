@@ -43,7 +43,7 @@ public class ApiController {
 	}
 
 	@GetMapping("/q3")
-	public int getFoundingYear(int id) {
+	public int getFoundingYear(@RequestParam int id) {
 		Artist artist = artist().read(id);
 		if (artist == null) {
 			throw new DataNotFoundException(
