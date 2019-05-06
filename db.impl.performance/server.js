@@ -38,20 +38,19 @@ const client = new Eureka({
 });
 
 client.logger.level('debug');
-// client.start(error => {
-//     console.log(error || 'NodeJS Eureka Started!');
+client.start(error => {
+    console.log(error || 'NodeJS Eureka Started!');
 
-//     app.get('/', (req, res) => {
-//         res.send('Hello from NodeJS Eureka Client\n');
-//         res.end();
-//     });
+    app.get('/', (req, res) => {
+        res.send('Hello from NodeJS Eureka Client\n');
+        res.end();
+    });
 
-//     app.post('/', () => {
-//         randomGen.startgen(10);
-//     });
-// });
+    app.post('/', () => {
+        randomGen.startgen(10);
+    });
+});
 
 app.listen(PORT, HOST);
 
 console.log(`Running on http://${HOST}:${PORT}`);
-randomGen.startgen(10);
