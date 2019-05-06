@@ -74,7 +74,7 @@ public class FileManagerImpl implements FileManager, DataProvider {
 		this.albums = StreamEx.of(albumExtended).map(Tupel::getFirst).toMap(Album::getId, Album::self);
 
 		// fill index
-		StreamEx.of(albumExtended).forEach(x -> this.index.addIndex(x.getFirst()));
+		StreamEx.of(albumExtended).forEach(x -> getIndex().addIndex(x.getFirst()));
 
 		this.relation = relation;
 	}
@@ -95,6 +95,13 @@ public class FileManagerImpl implements FileManager, DataProvider {
 			this.albumCrud = obj;
 		}
 		return this.albumCrud;
+	}
+
+	private IndexManager getIndex() {
+		if (this.index == null) {
+			editAlbum();
+		}
+		return this.index;
 	}
 
 	@Override
