@@ -32,7 +32,6 @@ if($args[0] -Match "t"){
 $VOLUME_M2_PATH="${USER_PATH}/.m2:/root/.m2"
 
 # z -> build zuul
-# m -> build manager
 # i -> build Instance
 # e -> build eureka
 # b -> build all
@@ -65,6 +64,7 @@ build -ARG $args[0] -CHAR i -NAME instance
 docker-compose stop
 
 docker image prune -f
+docker network prune -f
 
 echo "------------------------------------------------------------------------"
 echo "START MS DB"

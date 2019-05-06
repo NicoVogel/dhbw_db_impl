@@ -15,7 +15,7 @@ services:
     - backend
   instance:
     image: dhbw-db-instance
-    volume:
+    volumes:
     - ./data:/data
     networks:
     - backend

@@ -49,6 +49,10 @@ public class AlbumController {
 			throw new ParameterMissmatchException("cannot create a new album, the year is below 0", Album.class, "year",
 					Integer.toString(album.getYear()), "greather than 0");
 		}
+		if (album.getArtists().isEmpty()) {
+			throw new ParameterMissmatchException("cannot create a new album, there needs to be at least one artist id",
+					Album.class, "artists", "0", "graether than 0");
+		}
 
 		album().create(album);
 		List<Artist> rollback = new ArrayList<>();

@@ -37,19 +37,19 @@ public class CsvManagerImpl implements CsvManager {
 
 		do {
 			try (Reader reader = Files.newBufferedReader(Paths.get(filename), StandardCharsets.UTF_8);
-					CSVParser parser = new CSVParser(null, this.format)) {
+					CSVParser parser = new CSVParser(reader, this.format)) {
 				for (CSVRecord csvRecord : parser) {
 					result.add(readConverter.convert(csvRecord));
 				}
 				if (log.isInfoEnabled()) {
-					log.info("read %d elements from %s", result.size(), filename);
+					log.info("read {} elements from {}", result.size(), filename);
 				}
 				return result;
 			} catch (IOException e) {
 				log.error("error while parsing CSV file: " + filename, e);
 			}
 			counter++;
-		} while (result.isEmpty() && counter <= retrys);
+		} while (result.isEmpty() && counter <= this.retrys);
 
 		return result;
 	}
@@ -58,7 +58,7 @@ public class CsvManagerImpl implements CsvManager {
 	public <T> boolean appendLine(String filename, T data, WriteConvert<T> writeConverter) {
 		return generalWrite(filename, StandardOpenOption.APPEND, (printer) -> {
 			writeConverter.convert(printer, data);
-			log.info("appended file %s", filename);
+			log.info("appended file {}", filename);
 		});
 	}
 
@@ -68,7 +68,7 @@ public class CsvManagerImpl implements CsvManager {
 			for (T t : iterator) {
 				writeConverter.convert(printer, t);
 			}
-			log.info("updated file %s", filename);
+			log.info("updated file {}", filename);
 		});
 	}
 
@@ -91,7 +91,7 @@ public class CsvManagerImpl implements CsvManager {
 				success = false;
 			}
 			counter++;
-		} while (success == false && counter <= retrys);
+		} while (success == false && counter <= this.retrys);
 
 		return success;
 	}

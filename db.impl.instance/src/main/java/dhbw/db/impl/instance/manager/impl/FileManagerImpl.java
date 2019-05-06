@@ -62,17 +62,15 @@ public class FileManagerImpl implements FileManager, DataProvider {
 
 		// set artists ids
 		this.artistID = START_ID;
-		StreamEx<Artist> artistStream = StreamEx.of(artists);
-		artistStream.forEach(x -> x.setId(getArtistIDProvider().getNextID()));
+		StreamEx.of(artists).forEach(x -> x.setId(getArtistIDProvider().getNextID()));
 
 		// set album ids
 		this.albumID = START_ID;
-		StreamEx<Album> albumStream = StreamEx.of(albumExtended).map(Tupel::getFirst);
-		albumStream.forEach(x -> x.setId(getAlbumIDProvider().getNextID()));
+		StreamEx.of(albumExtended).map(Tupel::getFirst).forEach(x -> x.setId(getAlbumIDProvider().getNextID()));
 
 		// override original data
-		this.artists = artistStream.toMap(Artist::getId, Artist::self);
-		this.albums = albumStream.toMap(Album::getId, Album::self);
+		this.artists = StreamEx.of(artists).toMap(Artist::getId, Artist::self);
+		this.albums = StreamEx.of(albumExtended).map(Tupel::getFirst).toMap(Album::getId, Album::self);
 		this.relation = relation;
 	}
 
@@ -150,8 +148,8 @@ public class FileManagerImpl implements FileManager, DataProvider {
 	private Set<Tupel<Album, String[]>> readAlbum() {
 		return this.fileIO.readLines(this.albumFilename, reader -> {
 			String name = reader.get(0);
-			String[] relation = reader.get(1).split(",");
-			Integer year = tryParse(reader.get(2), () -> String.format("could not read album year from %s", name));
+			String[] relation = reader.get(2).split(",");
+			Integer year = tryParse(reader.get(1), () -> String.format("could not read album year from %s", name));
 			if (year == null) {
 				return null;
 			}

@@ -81,28 +81,16 @@
 				<groupId>com.spotify</groupId>
 				<artifactId>dockerfile-maven-plugin</artifactId>
 				<version>1.4.9</version>
-				<executions>
-					<!-- <execution> <id>default</id> <goals> <goal>build</goal> <goal>tag</goal> 
-						</goals> <configuration> <tag>${project.version}</tag> </configuration> </execution> -->
-					<execution>
-						<id>default</id>
-						<goals>
-							<goal>build</goal>
-							<goal>tag</goal>
-						</goals>
-						<configuration>
-							<tag>latest</tag>
-						</configuration>
-					</execution>
-				</executions>
 				<configuration>
 					<repository>
 						${docker.image.prefix}-instance</repository>
 					<buildArgs>
 						<JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
 					</buildArgs>
+					<pullNewerImage>false</pullNewerImage>
 				</configuration>
 			</plugin>
+			<!-- 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
@@ -124,7 +112,7 @@
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>
+			</plugin> -->
 		</plugins>
 	</build>
 
