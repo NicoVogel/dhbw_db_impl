@@ -21,6 +21,8 @@ services:
     - backend
   performance:
     image: dhbw-db-performance
+    depends_on:
+    - eureka
     networks:
     - backend
 networks: 
