@@ -12,8 +12,8 @@ VOLUME_M2_PATH="$USER_HOME/.m2:/root/.m2"
 # r -> remove existing container to rebuild them
 
 function remove {
-  if [[ -z $(docker ps -aq --filter ancestor=dhbw-db-$1) ]]; then
-      docker rm -vf $(docker ps -aq --filter ancestor=dhbw-db-$3)
+  if [[ ! -z $(docker ps -aq --filter ancestor=dhbw-db-$1) ]]; then
+      docker rm -vf $(docker ps -aq --filter ancestor=dhbw-db-$1)
     fi
 }
 
@@ -58,4 +58,4 @@ echo "------------------------------------------------------------------------"
 echo "START MS DB"
 echo "------------------------------------------------------------------------"
 
-docker-compose up -d
+docker-compose up
