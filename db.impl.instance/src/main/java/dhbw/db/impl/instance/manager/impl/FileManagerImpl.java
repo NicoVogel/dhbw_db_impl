@@ -39,6 +39,7 @@ public class FileManagerImpl implements FileManager, DataProvider {
 	@NonNull
 	private CsvManager fileIO;
 
+	private IndexManager index;
 	private ArtistHandler artistCrud;
 	private AlbumHandler albumCrud;
 	private int albumID = START_ID;
@@ -71,6 +72,10 @@ public class FileManagerImpl implements FileManager, DataProvider {
 		// override original data
 		this.artists = StreamEx.of(artists).toMap(Artist::getId, Artist::self);
 		this.albums = StreamEx.of(albumExtended).map(Tupel::getFirst).toMap(Album::getId, Album::self);
+
+		// fill index
+		StreamEx.of(albumExtended).forEach(x -> this.index.addIndex(x.getFirst()));
+
 		this.relation = relation;
 	}
 
@@ -85,7 +90,9 @@ public class FileManagerImpl implements FileManager, DataProvider {
 	@Override
 	public AlbumHandler editAlbum() {
 		if (this.albumCrud == null) {
-			this.albumCrud = new AlbumCRUD(this.fileIO, this);
+			AlbumCRUD obj = new AlbumCRUD(this.fileIO, this);
+			this.index = obj.getIndex();
+			this.albumCrud = obj;
 		}
 		return this.albumCrud;
 	}

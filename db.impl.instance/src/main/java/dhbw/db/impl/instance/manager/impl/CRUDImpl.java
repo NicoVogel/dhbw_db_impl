@@ -24,8 +24,12 @@ public class CRUDImpl {
 
 	public static <T extends Updater<T> & Identifier> boolean update(T value, Map<Integer, T> objects,
 			CsvManager fileIO, String filename, WriteConvert<T> writer) {
+		return update(value, objects, fileIO, filename, writer, read(value.getId(), objects));
+	}
 
-		T original = read(value.getId(), objects);
+	public static <T extends Updater<T> & Identifier> boolean update(T value, Map<Integer, T> objects,
+			CsvManager fileIO, String filename, WriteConvert<T> writer, T original) {
+
 		if (!original.update(value)) {
 			return false;
 		}
@@ -36,7 +40,7 @@ public class CRUDImpl {
 		return objects.get(id);
 	}
 
-	public static <T> boolean delete(int id, Map<Integer, T> objects) {
-		return objects.remove(id) != null;
+	public static <T> T delete(int id, Map<Integer, T> objects) {
+		return objects.remove(id);
 	}
 }

@@ -1,6 +1,7 @@
 package dhbw.db.impl.instance.manager;
 
 import java.util.List;
+import java.util.Map;
 
 import dhbw.db.impl.instance.model.Album;
 import dhbw.db.impl.instance.model.Artist;
@@ -26,5 +27,9 @@ public interface AlbumHandler extends CRUD<Album> {
 	public boolean removeArtistFromAlbum(Album album, Artist artist);
 
 	public List<Artist> getArtists(Album album);
+
+	public Map<Integer, Long> releasedAlbumsPerYear();
+
+	public Map<Integer, Long> releasedAlbumsPerYearIndex();
 
 }

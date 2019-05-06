@@ -55,7 +55,7 @@ public class ArtistCRUD implements ArtistHandler {
 
 	@Override
 	public boolean delete(int id) {
-		return CRUDImpl.delete(id, this.dataProvider.getArtists());
+		return CRUDImpl.delete(id, this.dataProvider.getArtists()) != null;
 	}
 
 	@Override
