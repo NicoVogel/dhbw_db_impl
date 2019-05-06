@@ -36,6 +36,12 @@ $VOLUME_M2_PATH="${USER_PATH}/.m2:/root/.m2"
 # e -> build eureka
 # b -> build all
 
+function remove($NAME){
+    if( $(docker ps -aq --filter ancestor=dhbw-db-$NAME) ){
+        docker rm -vf $(docker ps -aq --filter ancestor=dhbw-db-${NAME})
+    }
+}
+
 function build($ARG, $CHAR, $NAME) {
     if((${ARG} -Match "b") -Or (${ARG} -Match "${CHAR}") -Or ( -Not $(docker images -q dhbw-db-$NAME))){
         echo "------------------------------------------------------------------------"
@@ -51,9 +57,7 @@ function build($ARG, $CHAR, $NAME) {
             maven:alpine `
             mvn install dockerfile:build
         
-        if( $(docker ps -aq --filter ancestor=dhbw-db-$NAME) ){
-            docker rm -vf $(docker ps -aq --filter ancestor=dhbw-db-${NAME})
-        }
+        remove -NAME $NAME
     }
 }
 
@@ -62,9 +66,14 @@ build -ARG $args[0] -CHAR e -NAME eureka
 build -ARG $args[0] -CHAR i -NAME instance
 
 docker-compose stop
-
 docker image prune -f
-docker network prune -f
+
+if(${ARG} -Match "r"){
+    docker network prune -f
+    remove -NAME zuul
+    remove -NAME eureka
+    remove -NAME instance
+}
 
 echo "------------------------------------------------------------------------"
 echo "START MS DB"
