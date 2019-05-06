@@ -3,11 +3,10 @@ package dhbw.db.impl.instance.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.websocket.server.PathParam;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -78,12 +77,12 @@ public class AlbumController {
 	}
 
 	@GetMapping("/{id}")
-	public Album read(@PathParam("id") int id) {
+	public Album read(@PathVariable int id) {
 		return album().read(id);
 	}
 
 	@PutMapping("/{id}")
-	public void update(@PathParam("id") int id, @RequestBody Album album) {
+	public void update(@PathVariable int id, @RequestBody Album album) {
 		album.setId(id);
 		if (album().update(album) == false) {
 			throw new DataNotFoundException(String.format("update failed, no album found for ID %d.", id), Album.class,
@@ -92,14 +91,14 @@ public class AlbumController {
 	}
 
 	@DeleteMapping("/{id}")
-	public void delete(@PathParam("id") int id) {
+	public void delete(@PathVariable int id) {
 		if (album().delete(id) == false) {
 			log.debug(String.format("tried to delete an artist where the id %d doesn't exist", id));
 		}
 	}
 
 	@PostMapping("/{id}/artist")
-	public void addArtist(@PathParam("id") int id, @RequestBody int artistId) {
+	public void addArtist(@PathVariable int id, @RequestBody int artistId) {
 
 		Album album = album().read(id);
 		if (album == null) {
@@ -118,7 +117,7 @@ public class AlbumController {
 	}
 
 	@DeleteMapping("/{id}/artist/{artistid}")
-	public void removeArtist(@PathParam("id") int id, @PathParam("artistid") int artistId) {
+	public void removeArtist(@PathVariable int id, @PathVariable int artistId) {
 
 		Album album = album().read(id);
 		if (album == null) {

@@ -1,10 +1,9 @@
 package dhbw.db.impl.instance.controller;
 
-import javax.websocket.server.PathParam;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,12 +43,12 @@ public class ArtistController {
 	}
 
 	@GetMapping("/{id}")
-	public Artist read(@PathParam("id") int id) {
+	public Artist read(@PathVariable int id) {
 		return artist().read(id);
 	}
 
 	@PutMapping("/{id}")
-	public void update(@PathParam("id") int id, @RequestBody Artist artist) {
+	public void update(@PathVariable int id, @RequestBody Artist artist) {
 		artist.setId(id);
 		if (artist().update(artist) == false) {
 			throw new DataNotFoundException(String.format("update failed, no artist found for ID %d.", id),
@@ -58,7 +57,7 @@ public class ArtistController {
 	}
 
 	@DeleteMapping("/{id}")
-	public void delete(@PathParam("id") int id) {
+	public void delete(@PathVariable int id) {
 		if (artist().delete(id) == false) {
 			log.debug(String.format("tried to delete an artist where the id %d doesn't exist", id));
 		}
