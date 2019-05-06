@@ -52,7 +52,7 @@ public class FileManagerImpl implements FileManager, DataProvider {
 	}
 
 	@Override
-	public void reloadData() {
+	public int reloadData() {
 		// get data
 		Set<Artist> artists = readArtists();
 		Set<Tupel<Album, String[]>> albumExtended = readAlbum();
@@ -72,11 +72,14 @@ public class FileManagerImpl implements FileManager, DataProvider {
 		// override original data
 		this.artists = StreamEx.of(artists).toMap(Artist::getId, Artist::self);
 		this.albums = StreamEx.of(albumExtended).map(Tupel::getFirst).toMap(Album::getId, Album::self);
+		this.relation = relation;
 
 		// fill index
 		StreamEx.of(albumExtended).forEach(x -> getIndex().addIndex(x.getFirst()));
 
-		this.relation = relation;
+		int albumCount = this.albums.size();
+		int artistCount = this.artists.size();
+		return Math.max(albumCount, artistCount);
 	}
 
 	@Override
