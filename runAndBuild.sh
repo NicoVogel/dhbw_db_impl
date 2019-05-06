@@ -42,12 +42,12 @@ build $1 i instance
 build $1 e eureka
 
 
-if[[ $1 == *"b"* ]] || [[ $1 == *p* ]] || [[ -z $(docker images -q dhbw-db-performance) ]]; then
+if [[ $1 == *"b"* ]] || [[ $1 == *p* ]] || [[ -z $(docker images -q dhbw-db-performance) ]]; then
     echo "------------------------------------------------------------------------"
     echo "BUILD performance"
     echo $MOUNT_PATH/db.impl.performance
     echo "------------------------------------------------------------------------"
-    docker build -t dhbw-db-performance ${pwd}/db.impl.performance/
+    docker build -t dhbw-db-performance $MOUNT_PATH/db.impl.performance/
     
     remove -NAME performance
 fi
