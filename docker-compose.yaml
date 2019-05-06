@@ -19,6 +19,10 @@ services:
     - ./data:/data
     networks:
     - backend
+  performance:
+    image: dhbw-db-performance
+    networks:
+    - backend
 networks: 
   frontend:
     internal: false 
