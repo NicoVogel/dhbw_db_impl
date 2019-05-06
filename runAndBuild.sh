@@ -36,15 +36,11 @@ function build {
   fi
 }
 
-
 build $1 z zuul
 build $1 i instance
 build $1 e eureka
 
-
 docker-compose stop
-docker image prune -f
-
 
 if [[ $1 == *"r"* ]]; then
   remove zuul
@@ -53,6 +49,7 @@ if [[ $1 == *"r"* ]]; then
   docker network prune -f
 fi
 
+docker image prune -f
 
 echo "------------------------------------------------------------------------"
 echo "START MS DB"

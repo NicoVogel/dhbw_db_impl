@@ -35,6 +35,7 @@ $VOLUME_M2_PATH="${USER_PATH}/.m2:/root/.m2"
 # i -> build Instance
 # e -> build eureka
 # b -> build all
+# r -> remove existing container to rebuild them
 
 function remove($NAME){
     if( $(docker ps -aq --filter ancestor=dhbw-db-$NAME) ){
@@ -66,7 +67,6 @@ build -ARG $args[0] -CHAR e -NAME eureka
 build -ARG $args[0] -CHAR i -NAME instance
 
 docker-compose stop
-docker image prune -f
 
 if(${ARG} -Match "r"){
     docker network prune -f
@@ -74,6 +74,8 @@ if(${ARG} -Match "r"){
     remove -NAME eureka
     remove -NAME instance
 }
+
+docker image prune -f
 
 echo "------------------------------------------------------------------------"
 echo "START MS DB"
