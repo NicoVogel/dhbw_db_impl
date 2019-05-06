@@ -3,9 +3,6 @@
 //https://itnext.io/how-to-use-netflixs-eureka-and-spring-cloud-for-service-registry-8b43c8acdf4e
 //https://nodejs.org/en/docs/guides/nodejs-docker-webapp/
 
-// required, because eureka is too slow...
-await sleep(10000)
-
 const randomGen = require('./randomGen');
 
 const express = require('express');
@@ -36,7 +33,7 @@ const client = new Eureka({
     eureka: {
         host: 'eureka',
         port: 8761,
-        servicePath: '/eureka'
+        servicePath: '/eureka/apps/'
     }
 });
 
