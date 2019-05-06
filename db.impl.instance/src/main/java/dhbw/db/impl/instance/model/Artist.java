@@ -1,6 +1,7 @@
 package dhbw.db.impl.instance.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -43,6 +44,7 @@ public class Artist implements Identifier, Updater<Artist>, Itself<Artist> {
 		return true;
 	}
 
+	@JsonIgnore
 	public int getNameHash() {
 		return this.name.hashCode();
 	}
