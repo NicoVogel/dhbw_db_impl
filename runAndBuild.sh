@@ -8,6 +8,7 @@ VOLUME_M2_PATH="$USER_HOME/.m2:/root/.m2"
 # z -> build zuul
 # i -> build Instance
 # e -> build eureka
+# p -> build performance
 # b -> build all
 # r -> remove existing container to rebuild them
 
@@ -39,6 +40,17 @@ function build {
 build $1 z zuul
 build $1 i instance
 build $1 e eureka
+
+
+if[[ $1 == *"b"* ]] || [[ $1 == *p* ]] || [[ -z $(docker images -q dhbw-db-performance) ]]; then
+    echo "------------------------------------------------------------------------"
+    echo "BUILD performance"
+    echo $MOUNT_PATH/db.impl.performance
+    echo "------------------------------------------------------------------------"
+    docker build -t dhbw-db-performance ${pwd}/db.impl.performance/
+    
+    remove -NAME performance
+fi
 
 docker-compose stop
 

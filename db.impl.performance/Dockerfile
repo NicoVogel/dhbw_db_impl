@@ -1,0 +1,6 @@
+FROM node:8-alpine
+WORKDIR /usr/src/app
+COPY [ "package*.json", "server.js","randomGen.js", "./" ]
+RUN npm install
+EXPOSE 8080
+CMD [ "npm", "start" ]

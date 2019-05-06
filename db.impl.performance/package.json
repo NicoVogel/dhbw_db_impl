@@ -1,0 +1,30 @@
+{
+  "name": "db.impl.performence",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nicovogel/dhbw_db_impl.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nicovogel/dhbw_db_impl/issues"
+  },
+  "homepage": "https://github.com/nicovogel/dhbw_db_impl#readme",
+  "dependencies": {
+    "eureka-js-client": "^4.4.2",
+    "express": "^4.16.4",
+    "faker": "^4.1.0",
+    "lorem-ipsum": "^2.0.0",
+    "objects-to-csv": "^1.2.1",
+    "random": "^2.1.1",
+    "random-org": "^1.1.0",
+    "random-org-api": "0.0.2"
+  }
+}
