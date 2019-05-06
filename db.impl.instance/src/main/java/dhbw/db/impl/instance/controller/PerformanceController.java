@@ -12,8 +12,8 @@ import dhbw.db.impl.instance.manager.AlbumHandler;
 import dhbw.db.impl.instance.manager.FileManager;
 
 @RestController
-@RequestMapping("/performence")
-public class PerformenceController {
+@RequestMapping("/performance")
+public class PerformanceController {
 
 	@Autowired
 	private FileManager fm;
