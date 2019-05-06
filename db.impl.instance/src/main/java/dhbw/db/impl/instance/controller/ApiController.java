@@ -16,7 +16,7 @@ import dhbw.db.impl.instance.model.Artist;
 import dhbw.db.impl.instance.model.Tupel;
 
 @RestController
-@RequestMapping(path = "/", consumes = "application/json", produces = "application/json")
+@RequestMapping("/")
 public class ApiController {
 
 	@Autowired

@@ -19,7 +19,7 @@ import dhbw.db.impl.instance.model.Artist;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping(path = "/artist", consumes = "application/json", produces = "application/json")
+@RequestMapping("/artist")
 @Slf4j
 public class ArtistController {
 
