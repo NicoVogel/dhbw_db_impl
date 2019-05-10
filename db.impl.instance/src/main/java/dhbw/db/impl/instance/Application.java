@@ -37,7 +37,10 @@ public class Application {
 
 	@PostConstruct
 	public void init() {
-		fm.reloadData();
+		long start = System.currentTimeMillis();
+		this.fm.reloadData();
+		long end = System.currentTimeMillis() - start;
+		log.info(String.format("File Load Time: %d", end));
 	}
 
 	@Value("${app.artistfile}")
