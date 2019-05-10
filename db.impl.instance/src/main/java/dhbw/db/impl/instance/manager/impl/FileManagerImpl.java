@@ -48,18 +48,39 @@ public class FileManagerImpl implements FileManager, DataProvider {
 	private Map<Integer, Artist> artists;
 	private Set<Tupel<Album, Artist>> relation;
 
+	private List<Long> times;
+	private long last;
+
 	public void getData() {
+	}
+
+	private void initTimeMessure() {
+		this.times = new ArrayList<>();
+		this.last = System.currentTimeMillis();
+	}
+
+	private void nextTime() {
+		long current = System.currentTimeMillis();
+		this.times.add(current - this.last);
+		this.last = current;
 	}
 
 	@Override
 	public int reloadData() {
+
+		initTimeMessure();
+
 		// get data
 		Set<Artist> artists = readArtists();
+		nextTime();
+
 		Set<Tupel<Album, String[]>> albumExtended = readAlbum();
+		nextTime();
 
 		// fix and convert data
 		findAndRemoveDuplicateArtistsByName(artists);
 		Set<Tupel<Album, Artist>> relation = relationAndRemoveAmbiguousAlbums(artists, albumExtended);
+		nextTime();
 
 		// set artists ids
 		this.artistID = START_ID;
@@ -76,6 +97,10 @@ public class FileManagerImpl implements FileManager, DataProvider {
 
 		// fill index
 		StreamEx.of(albumExtended).forEach(x -> getIndex().addIndex(x.getFirst()));
+		nextTime();
+
+		log.info(String.format("read artist (%d), read album (%d), build relation (%d), last steps (%d)",
+				this.times.get(0), this.times.get(1), this.times.get(2), this.times.get(3)));
 
 		int albumCount = this.albums.size();
 		int artistCount = this.artists.size();
@@ -145,7 +170,7 @@ public class FileManagerImpl implements FileManager, DataProvider {
 		try {
 			return Integer.parseInt(val);
 		} catch (NumberFormatException e) {
-			log.error(errorMessage.process(), e);
+			log.info(errorMessage.process(), e);
 		}
 		return null;
 	}
@@ -181,7 +206,7 @@ public class FileManagerImpl implements FileManager, DataProvider {
 		StreamEx<List<Artist>> duplicateIterator = StreamEx.of(groupedValues).filter(x -> x.size() > 1);
 
 		for (List<Artist> duplicateName : duplicateIterator) {
-			Log.warn(String.format("There exist at least two artists with the same name '%s', amount %d",
+			Log.debug(String.format("There exist at least two artists with the same name '%s', amount %d",
 					duplicateName.get(0).getName(), duplicateName.size()));
 			for (Artist artist : duplicateName) {
 				if (log.isDebugEnabled()) {
@@ -212,7 +237,7 @@ public class FileManagerImpl implements FileManager, DataProvider {
 
 				// check if valid -> define album as not valid and add it to the removal list
 				if (artist == null) {
-					log.error(String.format("the album '%s' does have a artist named '%s' wich does not exist",
+					log.debug(String.format("the album '%s' does have a artist named '%s' wich does not exist",
 							album.getName(), artistName));
 					validRun = false;
 					removalList.add(tupel);
