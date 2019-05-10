@@ -37,9 +37,6 @@ public class Application {
 
 	@PostConstruct
 	public void init() {
-		log.error(String.format("fm == null? -> %b", this.fm == null));
-		log.error(String.format("app.artistfile=%s;\tapp.albumfile=%s;\tapp.retry=%d", this.artistFile, this.albumFile,
-				this.retry));
 		fm.reloadData();
 	}
 
@@ -53,8 +50,6 @@ public class Application {
 	@Bean
 	public FileManager getFileManager(@Value("${app.artistfile}") String artistFile,
 			@Value("${app.albumfile}") String albumFile, @Value("${app.retry}") int retry) {
-		log.error(String.format("app.artistfile=%s;\tapp.albumfile=%s;\tapp.retry=%d", artistFile, albumFile,
-				this.retry));
 		return new FileManagerImpl(artistFile, albumFile, getCsvManager(retry));
 	}
 
