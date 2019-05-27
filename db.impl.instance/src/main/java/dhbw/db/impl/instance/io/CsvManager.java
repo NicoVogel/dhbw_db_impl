@@ -8,6 +8,7 @@ public interface CsvManager {
 
 	public <T> boolean appendLine(String filename, T data, WriteConvert<T> writeConverter);
 
-	public <T> boolean updateLines(String filename, Iterable<T> iterator, WriteConvert<T> writeConverter);
+	public <T> boolean updateLines(String filename, T startEntity, Iterable<T> iterator,
+			WriteConvert<T> writeConverter);
 
 }
