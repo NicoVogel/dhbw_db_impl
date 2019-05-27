@@ -38,7 +38,7 @@ public class Artist implements Identifier, Updater<Artist>, Itself<Artist> {
 	@Override
 	public boolean update(Artist object) {
 		log.info("update Artist with id {}, with artist {}", this.id, object);
-		if (object == null || this.id == object.id) {
+		if (object == null || this.id != object.id) {
 			return false;
 		}
 		this.name = object.name;
