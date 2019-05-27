@@ -30,7 +30,7 @@ public class CRUDImpl {
 	public static <T extends Updater<T> & Identifier> boolean update(T value, Class<T> type, Map<Integer, T> objects,
 			CsvManager fileIO, String filename, WriteConvert<T> writer, T original) {
 
-		if (!original.update(value)) {
+		if (original.update(value) == false) {
 			throw new DataNotFoundException(
 					String.format("update failed, no %s found for ID %d.", type.getName(), value.getId()), type,
 					value.getId());
