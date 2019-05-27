@@ -49,13 +49,14 @@ public class ArtistCRUD implements ArtistHandler {
 
 	@Override
 	public boolean update(Artist obj) {
-		return CRUDImpl.update(obj, this.dataProvider.getArtists(), this.fileIO, this.dataProvider.getArtistFilename(),
-				this.writer);
+		return CRUDImpl.update(obj, Artist.class, this.dataProvider.getArtists(), this.fileIO,
+				this.dataProvider.getArtistFilename(), this.writer);
 	}
 
 	@Override
 	public boolean delete(int id) {
-		return CRUDImpl.delete(id, this.dataProvider.getArtists()) != null;
+		return CRUDImpl.delete(id, Artist.class, this.dataProvider.getArtists(), this.fileIO,
+				this.dataProvider.getArtistFilename(), this.writer) != null;
 	}
 
 	@Override

@@ -59,7 +59,7 @@ public class AlbumCRUD implements AlbumHandler {
 	@Override
 	public boolean update(Album obj) {
 		Album original = read(obj.getId());
-		boolean result = CRUDImpl.update(obj, this.dataProvider.getAlbums(), this.fileIO,
+		boolean result = CRUDImpl.update(obj, Album.class, this.dataProvider.getAlbums(), this.fileIO,
 				this.dataProvider.getAlbumFilename(), this.writer, original);
 		if (result) {
 			this.index.updateIndex(original, obj);
@@ -69,7 +69,8 @@ public class AlbumCRUD implements AlbumHandler {
 
 	@Override
 	public boolean delete(int id) {
-		Album deleted = CRUDImpl.delete(id, this.dataProvider.getAlbums());
+		Album deleted = CRUDImpl.delete(id, Album.class, this.dataProvider.getAlbums(), this.fileIO,
+				this.dataProvider.getAlbumFilename(), this.writer);
 		boolean result = deleted != null;
 		if (result) {
 			this.index.removeIndex(deleted);
