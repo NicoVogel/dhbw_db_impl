@@ -43,7 +43,7 @@ public class CRUDImpl {
 		return objects.get(id);
 	}
 
-	public static <T> boolean delete(int id, Class<T> type, Map<Integer, T> objects, CsvManager fileIO, String filename,
+	public static <T> T delete(int id, Class<T> type, Map<Integer, T> objects, CsvManager fileIO, String filename,
 			WriteConvert<T> writer) {
 		T obj = objects.get(id);
 		if (obj == null) {
@@ -58,6 +58,9 @@ public class CRUDImpl {
 		}
 		objects.remove(obj);
 
-		return fileIO.updateLines(filename, previous, objects.values(), writer);
+		if (fileIO.updateLines(filename, previous, objects.values(), writer) == false) {
+			throw new DataNotFoundException("There was an error while writing the file", type, id);
+		}
+		return obj;
 	}
 }
