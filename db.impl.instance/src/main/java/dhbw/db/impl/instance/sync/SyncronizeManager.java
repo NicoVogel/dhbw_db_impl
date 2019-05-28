@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -38,7 +40,7 @@ public class SyncronizeManager implements SyncDBs {
 		log.info("send reload, id {}", syncNum);
 	}
 
-	@RabbitListener(queues = "sync.queue")
+	@RabbitListener()
 	public void processReload(UUID id) {
 		log.info("receive rabbit messsage");
 		if (this.myIDs.remove(id) == false) {
@@ -55,6 +57,11 @@ public class SyncronizeManager implements SyncDBs {
 	@Bean
 	public FanoutExchange fanout() {
 		return new FanoutExchange(EXCHANGE_NAME);
+	}
+
+	@Bean
+	public Binding binding1(FanoutExchange fanout, Queue firstQueue) {
+		return BindingBuilder.bind(firstQueue).to(fanout);
 	}
 
 }
