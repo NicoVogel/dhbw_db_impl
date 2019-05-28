@@ -19,7 +19,8 @@ function remove {
 }
 
 function build {
-  if [[ $1 == *"b"* ]] || [[ $1 == *$2* ]] || [[ -z $(docker images -q dhbw-db-$3) ]]; then
+  echo "values build: '$1' '$2' '$3'"
+  if [[ $1 == *"b"* ]] || [[ $1 == *$2* ]] || [ -z $(docker images -q dhbw-db-$3) ]; then
     echo "------------------------------------------------------------------------"
     echo "BUILD $3"
     echo $MOUNT_PATH/db.impl.$3
@@ -48,7 +49,7 @@ if [[ $1 == *"b"* ]] || [[ $1 == *p* ]] || [[ -z $(docker images -q dhbw-db-perf
     echo $MOUNT_PATH/db.impl.performance
     echo "------------------------------------------------------------------------"
     docker build -t dhbw-db-performance $MOUNT_PATH/db.impl.performance/
-    
+
     remove -NAME performance
 fi
 
@@ -67,4 +68,4 @@ echo "------------------------------------------------------------------------"
 echo "START MS DB"
 echo "------------------------------------------------------------------------"
 
-docker-compose up --scale instance=2
+docker-compose up --scale instance=3
