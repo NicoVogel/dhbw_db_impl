@@ -9,7 +9,6 @@ import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
@@ -25,9 +24,6 @@ public class SyncronizeManager implements SyncDBs {
 
 	@Autowired
 	private FanoutExchange fanout;
-
-	@Value("${jsa.rabbitmq.exchange}")
-	private String exchange;
 
 	@Autowired
 	private FileManager fm;
