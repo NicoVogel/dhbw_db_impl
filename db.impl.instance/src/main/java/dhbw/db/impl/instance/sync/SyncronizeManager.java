@@ -38,7 +38,7 @@ public class SyncronizeManager implements SyncDBs {
 		log.info("send reload, id {}", syncNum);
 	}
 
-	@RabbitListener(queues = "#{QUEUE_NAME}")
+	@RabbitListener(queues = "sync.queue")
 	public void processReload(UUID id) {
 		log.info("receive rabbit messsage");
 		if (this.myIDs.remove(id) == false) {
