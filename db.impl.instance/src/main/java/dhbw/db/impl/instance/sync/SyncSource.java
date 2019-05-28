@@ -5,7 +5,7 @@ import org.springframework.messaging.MessageChannel;
 
 public interface SyncSource {
 
-	@Output("amq.fanoutChannel")
+	@Output("sync")
 	MessageChannel dbUpdate();
 
 }
