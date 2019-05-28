@@ -107,7 +107,7 @@ public class FileManagerImpl implements FileManager, DataProvider {
 		int albumCount = this.albums.size();
 		int artistCount = this.artists.size();
 		int result = Math.max(albumCount, artistCount);
-		this.isreloading = true;
+		this.isreloading = false;
 		this.synchronizerObject.notifyAll();
 		return result;
 	}
