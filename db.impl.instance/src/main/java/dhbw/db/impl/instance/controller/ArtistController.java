@@ -15,6 +15,7 @@ import dhbw.db.impl.instance.controller.error.ParameterMissmatchException;
 import dhbw.db.impl.instance.manager.ArtistHandler;
 import dhbw.db.impl.instance.manager.FileManager;
 import dhbw.db.impl.instance.model.Artist;
+import dhbw.db.impl.instance.sync.SyncDBs;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -24,6 +25,8 @@ public class ArtistController {
 
 	@Autowired
 	private FileManager fm;
+	@Autowired
+	private SyncDBs syncDB;
 
 	private ArtistHandler artist() {
 		return fm.editArtist();
@@ -39,7 +42,9 @@ public class ArtistController {
 			throw new ParameterMissmatchException("cannot create a new artist, the year is below 0", Artist.class,
 					"year", Integer.toString(artist.getYear()), "greather than 0");
 		}
-		return artist().create(artist).getId();
+		int id = artist().create(artist).getId();
+		this.syncDB.sync();
+		return id;
 	}
 
 	@GetMapping("/{id}")
@@ -54,6 +59,7 @@ public class ArtistController {
 			throw new DataNotFoundException(String.format("update failed, no artist found for ID %d.", id),
 					Artist.class, id);
 		}
+		this.syncDB.sync();
 	}
 
 	@DeleteMapping("/{id}")
@@ -61,6 +67,7 @@ public class ArtistController {
 		if (artist().delete(id) == false) {
 			log.debug(String.format("tried to delete an artist where the id %d doesn't exist", id));
 		}
+		this.syncDB.sync();
 	}
 
 }

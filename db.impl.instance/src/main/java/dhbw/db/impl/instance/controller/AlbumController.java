@@ -20,6 +20,7 @@ import dhbw.db.impl.instance.manager.ArtistHandler;
 import dhbw.db.impl.instance.manager.FileManager;
 import dhbw.db.impl.instance.model.Album;
 import dhbw.db.impl.instance.model.Artist;
+import dhbw.db.impl.instance.sync.SyncDBs;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -29,6 +30,8 @@ public class AlbumController {
 
 	@Autowired
 	private FileManager fm;
+	@Autowired
+	private SyncDBs syncDB;
 
 	private AlbumHandler album() {
 		return this.fm.editAlbum();
@@ -66,6 +69,7 @@ public class AlbumController {
 			album().addArtistToAlbum(album, artist);
 			rollback.add(artist);
 		}
+		this.syncDB.sync();
 		return album.getId();
 	}
 
@@ -88,6 +92,7 @@ public class AlbumController {
 			throw new DataNotFoundException(String.format("update failed, no album found for ID %d.", id), Album.class,
 					id);
 		}
+		this.syncDB.sync();
 	}
 
 	@DeleteMapping("/{id}")
@@ -95,6 +100,7 @@ public class AlbumController {
 		if (album().delete(id) == false) {
 			log.debug(String.format("tried to delete an artist where the id %d doesn't exist", id));
 		}
+		this.syncDB.sync();
 	}
 
 	@PostMapping("/{id}/artist")
@@ -114,6 +120,7 @@ public class AlbumController {
 					Artist.class, artistId);
 		}
 		album().addArtistToAlbum(album, artist);
+		this.syncDB.sync();
 	}
 
 	@DeleteMapping("/{id}/artist/{artistid}")
@@ -134,5 +141,6 @@ public class AlbumController {
 					Artist.class, artistId);
 		}
 		album().removeArtistFromAlbum(album, artist);
+		this.syncDB.sync();
 	}
 }
