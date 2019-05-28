@@ -19,12 +19,6 @@ services:
     - ./data:/data
     networks:
     - backend
-  performance:
-    image: dhbw-db-performance
-    depends_on:
-    - eureka
-    networks:
-    - backend
   rabbitmq:
     image: rabbitmq:alpine
     ports:
