@@ -33,7 +33,9 @@ public class AlbumCRUD implements AlbumHandler {
 
 	private WriteConvert<Album> writer = (printer, data) -> {
 		try {
-			printer.printRecord(data.getName(), data.getYear());
+			List<String> artists = StreamEx.of(this.dataProvider.getRelation()).filter(x -> x.getFirst().equals(data))
+					.map(x -> x.getSecond().getName()).toList();
+			printer.printRecord(data.getName(), artists, data.getYear());
 		} catch (IOException e) {
 			log.error("unable to add a element to file; Data: %s", data);
 		}
