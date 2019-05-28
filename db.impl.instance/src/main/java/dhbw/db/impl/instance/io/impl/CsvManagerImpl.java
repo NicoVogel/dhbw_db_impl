@@ -16,12 +16,10 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import dhbw.db.impl.instance.io.CsvManager;
 import dhbw.db.impl.instance.io.ReadConvert;
 import dhbw.db.impl.instance.io.WriteConvert;
-import dhbw.db.impl.instance.sync.SyncDBs;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,9 +30,6 @@ public class CsvManagerImpl implements CsvManager {
 	private static final int FILE_GROWTH_LOCK_BUFFER = 1000;
 	private final int retrys;
 	private CSVFormat format = CSVFormat.DEFAULT.withCommentMarker('#').withIgnoreHeaderCase().withTrim();
-
-	@Autowired
-	private SyncDBs syncDB;
 
 	@Override
 	public <T> Set<T> readLines(String filename, ReadConvert<T> readConverter) {
@@ -145,7 +140,6 @@ public class CsvManagerImpl implements CsvManager {
 			}
 			counter++;
 		} while (counter <= this.retrys);
-		this.syncDB.sync();
 		return false;
 	}
 
