@@ -183,7 +183,9 @@ public class FileManagerImpl implements FileManager, DataProvider {
 		if (this.isreloading) {
 			try {
 				log.info("wait for file reload");
-				this.synchronizerObject.wait();
+				synchronized (this.synchronizerObject) {
+					this.synchronizerObject.wait();
+				}
 				log.info("continue processing");
 			} catch (InterruptedException e) {
 				log.error("wait was interruped", e);
