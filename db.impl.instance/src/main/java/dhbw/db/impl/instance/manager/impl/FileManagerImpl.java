@@ -86,11 +86,11 @@ public class FileManagerImpl implements FileManager, DataProvider {
 
 		// set artists ids
 		this.artistID = START_ID;
-		StreamEx.of(artists).forEach(x -> x.setId(getArtistIDProvider().getNextID()));
+		StreamEx.of(artists).forEach(x -> x.setId(getArtistIDProviderNoWait().getNextID()));
 
 		// set album ids
 		this.albumID = START_ID;
-		StreamEx.of(albumExtended).map(Tupel::getFirst).forEach(x -> x.setId(getAlbumIDProvider().getNextID()));
+		StreamEx.of(albumExtended).map(Tupel::getFirst).forEach(x -> x.setId(getAlbumIDProviderNoWait().getNextID()));
 
 		// override original data
 		this.artists = StreamEx.of(artists).toMap(Artist::getId, Artist::self);
@@ -108,7 +108,9 @@ public class FileManagerImpl implements FileManager, DataProvider {
 		int artistCount = this.artists.size();
 		int result = Math.max(albumCount, artistCount);
 		this.isreloading = false;
-		this.synchronizerObject.notifyAll();
+		synchronized (this.synchronizerObject) {
+			this.synchronizerObject.notifyAll();
+		}
 		return result;
 	}
 
@@ -124,6 +126,10 @@ public class FileManagerImpl implements FileManager, DataProvider {
 	@Override
 	public AlbumHandler editAlbum() {
 		waitIfReloading();
+		return editAlbumNoWait();
+	}
+
+	private AlbumHandler editAlbumNoWait() {
 		if (this.albumCrud == null) {
 			AlbumCRUD obj = new AlbumCRUD(this.fileIO, this);
 			this.index = obj.getIndex();
@@ -133,9 +139,8 @@ public class FileManagerImpl implements FileManager, DataProvider {
 	}
 
 	private IndexManager getIndex() {
-		waitIfReloading();
 		if (this.index == null) {
-			editAlbum();
+			editAlbumNoWait();
 		}
 		return this.index;
 	}
@@ -143,12 +148,20 @@ public class FileManagerImpl implements FileManager, DataProvider {
 	@Override
 	public IDProvider getAlbumIDProvider() {
 		waitIfReloading();
+		return getAlbumIDProviderNoWait();
+	}
+
+	private IDProvider getAlbumIDProviderNoWait() {
 		return () -> this.albumID++;
 	}
 
 	@Override
 	public IDProvider getArtistIDProvider() {
 		waitIfReloading();
+		return getArtistIDProviderNoWait();
+	}
+
+	private IDProvider getArtistIDProviderNoWait() {
 		return () -> this.artistID++;
 	}
 
