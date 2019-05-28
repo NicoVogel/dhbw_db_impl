@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.cloud.stream.messaging.Processor;
+import org.springframework.cloud.stream.messaging.Sink;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +16,7 @@ import dhbw.db.impl.instance.manager.FileManager;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
-@EnableBinding(Processor.class)
+@EnableBinding(Sink.class)
 @Slf4j
 public class SyncronizeManager implements SyncDBs {
 
