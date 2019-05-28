@@ -7,13 +7,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @ToString
-@Slf4j
 public class Artist implements Identifier, Updater<Artist>, Itself<Artist> {
 
 	private int id;
@@ -37,7 +35,6 @@ public class Artist implements Identifier, Updater<Artist>, Itself<Artist> {
 
 	@Override
 	public boolean update(Artist object) {
-		log.info("update Artist with id {}, with artist {}", this.id, object);
 		if (object == null || this.id != object.id) {
 			return false;
 		}
