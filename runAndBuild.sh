@@ -19,8 +19,6 @@ function remove {
 }
 
 function build {
-  echo "values build: '$1' '$2' '$3'"
-  if 
   if [[ -n $1 ]] && ([[ $1 == *"b"* ]] || [[ $1 == *$2* ]]) || [ -z $(docker images -q dhbw-db-$3) ]; then
     echo "------------------------------------------------------------------------"
     echo "BUILD $3"
