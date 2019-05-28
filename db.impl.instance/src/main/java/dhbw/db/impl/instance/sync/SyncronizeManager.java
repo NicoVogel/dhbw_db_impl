@@ -19,11 +19,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SyncronizeManager implements SyncDBs {
 
-	@Autowired
-	private RabbitTemplate template;
+	private static final String EXCHANGE_NAME = "sync.fanout";
+	private static final String QUEUE_NAME = "sync.queue";
 
 	@Autowired
-	private FanoutExchange fanout;
+	private RabbitTemplate template;
 
 	@Autowired
 	private FileManager fm;
@@ -34,13 +34,14 @@ public class SyncronizeManager implements SyncDBs {
 	public void sync() {
 		UUID syncNum = UUID.randomUUID();
 		this.myIDs.add(syncNum);
-		this.template.convertAndSend(fanout.getName(), "", syncNum);
+		this.template.convertAndSend(EXCHANGE_NAME, "", syncNum);
 		log.info("send reload, id {}", syncNum);
 	}
 
-	@RabbitListener(queues = "#{firstQueue.name}")
+	@RabbitListener(queues = "QUEUE_NAME")
 	public void processReload(UUID id) {
-		if (myIDs.remove(id) == false) {
+		log.info("receive rabbit messsage");
+		if (this.myIDs.remove(id) == false) {
 			log.info("reload Data, sender {}", id);
 			fm.reloadData();
 		}
@@ -48,12 +49,12 @@ public class SyncronizeManager implements SyncDBs {
 
 	@Bean
 	public Queue firstQueue() {
-		return new Queue("jsa.queue.1");
+		return new Queue(QUEUE_NAME);
 	}
 
 	@Bean
 	public FanoutExchange fanout() {
-		return new FanoutExchange("tut.fanout");
+		return new FanoutExchange(EXCHANGE_NAME);
 	}
 
 }
