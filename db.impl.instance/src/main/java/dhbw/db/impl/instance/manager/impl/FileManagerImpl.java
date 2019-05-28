@@ -47,6 +47,8 @@ public class FileManagerImpl implements FileManager, DataProvider {
 	private Map<Integer, Album> albums;
 	private Map<Integer, Artist> artists;
 	private Set<Tupel<Album, Artist>> relation;
+	private Object synchronizerObject = new Object();
+	private boolean isreloading = false;
 
 	private List<Long> times;
 	private long last;
@@ -66,8 +68,8 @@ public class FileManagerImpl implements FileManager, DataProvider {
 	}
 
 	@Override
-	public int reloadData() {
-
+	public synchronized int reloadData() {
+		this.isreloading = true;
 		initTimeMessure();
 
 		// get data
@@ -104,11 +106,15 @@ public class FileManagerImpl implements FileManager, DataProvider {
 
 		int albumCount = this.albums.size();
 		int artistCount = this.artists.size();
-		return Math.max(albumCount, artistCount);
+		int result = Math.max(albumCount, artistCount);
+		this.isreloading = true;
+		this.synchronizerObject.notifyAll();
+		return result;
 	}
 
 	@Override
 	public ArtistHandler editArtist() {
+		waitIfReloading();
 		if (this.artistCrud == null) {
 			this.artistCrud = new ArtistCRUD(this.fileIO, this);
 		}
@@ -117,6 +123,7 @@ public class FileManagerImpl implements FileManager, DataProvider {
 
 	@Override
 	public AlbumHandler editAlbum() {
+		waitIfReloading();
 		if (this.albumCrud == null) {
 			AlbumCRUD obj = new AlbumCRUD(this.fileIO, this);
 			this.index = obj.getIndex();
@@ -126,6 +133,7 @@ public class FileManagerImpl implements FileManager, DataProvider {
 	}
 
 	private IndexManager getIndex() {
+		waitIfReloading();
 		if (this.index == null) {
 			editAlbum();
 		}
@@ -134,16 +142,19 @@ public class FileManagerImpl implements FileManager, DataProvider {
 
 	@Override
 	public IDProvider getAlbumIDProvider() {
+		waitIfReloading();
 		return () -> this.albumID++;
 	}
 
 	@Override
 	public IDProvider getArtistIDProvider() {
+		waitIfReloading();
 		return () -> this.artistID++;
 	}
 
 	@Override
 	public Map<Integer, Album> getAlbums() {
+		waitIfReloading();
 		if (this.albums == null) {
 			this.albums = new HashMap<>();
 		}
@@ -152,6 +163,7 @@ public class FileManagerImpl implements FileManager, DataProvider {
 
 	@Override
 	public Map<Integer, Artist> getArtists() {
+		waitIfReloading();
 		if (this.artists == null) {
 			this.artists = new HashMap<>();
 		}
@@ -160,10 +172,23 @@ public class FileManagerImpl implements FileManager, DataProvider {
 
 	@Override
 	public Set<Tupel<Album, Artist>> getRelation() {
+		waitIfReloading();
 		if (this.relation == null) {
 			this.relation = new HashSet<>();
 		}
 		return this.relation;
+	}
+
+	private void waitIfReloading() {
+		if (this.isreloading) {
+			try {
+				log.info("wait for file reload");
+				this.synchronizerObject.wait();
+				log.info("continue processing");
+			} catch (InterruptedException e) {
+				log.error("wait was interruped", e);
+			}
+		}
 	}
 
 	private Integer tryParse(String val, LogMessage errorMessage) {
