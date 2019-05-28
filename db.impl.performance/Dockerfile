@@ -4,4 +4,4 @@ RUN mkdir -p /data
 COPY [ "package*.json", "server.js","randomGen.js", "./" ]
 RUN npm install
 EXPOSE 8080
-CMD [ "npm", "start" ]
+CMD [ "npm", "install", "bench-rest" ]
