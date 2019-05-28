@@ -25,6 +25,12 @@ services:
     - eureka
     networks:
     - backend
+  rabbitmq:
+    image: rabbitmq:alpine
+    ports:
+    - "5672:5672"
+    networks: 
+    - backend
 networks: 
   frontend:
     internal: false 
