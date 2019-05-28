@@ -19,7 +19,7 @@ function remove {
 }
 
 function build {
-  if [[ -n $1 ]] && ([[ $1 == *"b"* ]] || [[ $1 == *$2* ]]) || [ -z $(docker images -q dhbw-db-$3) ]; then
+  if ([[ -n $1 ]] && ([[ $1 == *"b"* ]] || [[ $1 == *$2* ]])) || [ -z $(docker images -q dhbw-db-$3) ]; then
     echo "------------------------------------------------------------------------"
     echo "BUILD $3"
     echo $MOUNT_PATH/db.impl.$3
