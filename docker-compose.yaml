@@ -1,0 +1,33 @@
+version: '3'
+services:
+  zuul:
+    image: dhbw-db-zuul
+    ports:
+    - "8080:8080"
+    networks:
+    - backend
+    - frontend
+  eureka:
+    image: dhbw-db-eureka
+    ports:
+    - "8761:8761"
+    networks:
+    - backend
+  instance:
+    image: dhbw-db-instance
+    volumes:
+    - ./data:/data
+    networks:
+    - backend
+  rabbitmq:
+    image: rabbitmq:management-alpine
+    ports:
+    - "15672:15672"
+    - "5672:5672"
+    networks: 
+    - backend
+networks: 
+  frontend:
+    internal: false 
+  backend:
+    internal: false
