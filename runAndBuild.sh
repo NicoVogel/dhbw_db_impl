@@ -56,4 +56,4 @@ echo "------------------------------------------------------------------------"
 echo "START MS DB"
 echo "------------------------------------------------------------------------"
 
-docker-compose up --scale instance=3
+docker-compose up --scale instance=1
